@@ -7,6 +7,10 @@ module.exports = {
             'app-green': '#214A25',
             'app-yellow': '#FFBA35',
           },
+          spacing:{
+            '112': '28rem',
+            '128': '32rem',
+          }
       },
     },
     plugins: [],

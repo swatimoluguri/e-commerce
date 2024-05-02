@@ -29,7 +29,7 @@ const Navbar = () => {
           <img className="w-6" src={Youtube} alt="Youtube" />
         </div>
       </div>
-      <div className="flex flex-row px-44 py-6 items-center justify-between bg-white drop-shadow-lg">
+      <div className="flex flex-row px-44 py-6 items-center justify-between bg-white">
         <div>
           <img className="w-44" src={Logo} alt="Logo" />
         </div>
