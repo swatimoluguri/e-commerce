@@ -7,7 +7,7 @@ const Card = ({src,desc,price}) => {
       <div className="p-2 mx-auto">
       <div class="rounded-2xl shadow-lg overflow-hidden">
       <img
-        class="rounded-lg h-80 w-96 object-cover"
+        class="rounded-lg h-80 w-96 object-contain"
         src={src}
         alt="jacket"
       />

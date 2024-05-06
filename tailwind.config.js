@@ -10,6 +10,9 @@ module.exports = {
           spacing:{
             '112': '28rem',
             '128': '32rem',
+          },
+          backgroundImage: {
+            'grey-bg': "url('./src/assets/bg.jpg')",
           }
       },
     },
