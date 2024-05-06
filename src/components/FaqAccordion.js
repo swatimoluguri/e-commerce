@@ -38,7 +38,7 @@ const FaqAccordion = () => {
                 className={`overflow-hidden font-normal text-sm ${
                   visibleAnswerId === item._id
                     ? "py-4 rounded-xl transition-all duration-300 max-h-128"
-                    : "max-h-0"
+                    : "max-h-0 duration-200"
                 }`}
               >
                 {item.answer}

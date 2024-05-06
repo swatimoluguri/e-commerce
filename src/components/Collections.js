@@ -2,7 +2,7 @@ import ProductCard from "./ProductCard";
 import { useState } from "react";
 
 const Collections = () => {
-  const [active, setActive] = useState(null);
+  const [active, setActive] = useState("All Products");
 
   const list = [
     "All Products",
@@ -32,7 +32,7 @@ const Collections = () => {
         ))}
       </div>
       <div>
-        <ProductCard />
+        <ProductCard filter={active}/>
       </div>
     </div>
   );
