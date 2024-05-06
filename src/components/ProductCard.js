@@ -13,7 +13,6 @@ const ProductCard = () => {
     fetch("http://localhost:3000/products")
       .then((response) => response.json())
       .then((data) => {
-        console.log(data);
         setProducts(data);
       })
       .catch((error) => console.error("Error fetching products:", error));
@@ -22,7 +21,7 @@ const ProductCard = () => {
     <div className="flex flex-wrap gap-8 pb-8">
       {products.map((item) => (
         <div
-          key={item.id}
+          key={item._id}
           className="w-96  shadow-lg flex flex-col rounded-3xl overflow-hidden"
         >
           <div className="h-72 p-3">

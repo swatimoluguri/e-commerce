@@ -86,7 +86,7 @@ const SaleBanner = () => {
           Shop Now <FontAwesomeIcon icon={faArrowRight} />
         </button>
       </div>
-      <div class="bg-[url('assets/package.jpg')] py-12 rounded-xl w-1/2 bg-cover"></div>
+      <div className="bg-[url('assets/package.jpg')] py-12 rounded-xl w-1/2 bg-cover"></div>
     </div>
   );
 };

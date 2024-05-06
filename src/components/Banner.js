@@ -12,12 +12,12 @@ const Banner = () => {
     <Card
       src={"https://fakestoreapi.com/img/71li-ujtlUL._AC_UX679_.jpg"}
       desc={"Mens Cotton Jacket"}
-      price={"Rs. 4,679"}
+      price={"4,679"}
     />,
     <Card
       src={"https://fakestoreapi.com/img/81QpkIctqPL._AC_SX679_.jpg"}
       desc={'Acer SB220Q 21.5" Full HD'}
-      price={"Rs. 49,999"}
+      price={"49,999"}
     />,
   ];
   useEffect(() => {

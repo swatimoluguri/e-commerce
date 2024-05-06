@@ -28,3 +28,14 @@ app.get("/products", (req, res) => {
       res.status(500).json({ error: "Could not fetch products" });
     });
 });
+
+app.get("/faqs", (req, res) => {
+  let faqs = [];
+  db.collection("faqs")
+    .find()
+    .forEach((ques) => faqs.push(ques))
+    .then(() => res.json(faqs))
+    .catch(() => {
+      res.status(500).json({ error: "Could not fetch faqs" });
+    });
+});
