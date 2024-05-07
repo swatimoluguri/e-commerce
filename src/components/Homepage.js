@@ -1,4 +1,3 @@
-import Navbar from "./Navbar";
 import Banner from "./Banner";
 import DetailsStrip from "./DetailsStrip";
 import Collections from "./Collections";
@@ -6,12 +5,11 @@ import SaleBanner from "./SaleBanner";
 import FaqAccordion from "./FaqAccordion";
 import Heading from "./Heading";
 import Newsletter from "./Newsletter";
-import Footer from "./Footer";
+
 
 const Homepage = () => {
   return (
     <div>
-      <Navbar />
       <Banner />
       <DetailsStrip />
       <Heading
@@ -31,7 +29,7 @@ const Homepage = () => {
         />
         <Newsletter />
       </div>
-      <Footer />
+
     </div>
   );
 };

@@ -58,7 +58,10 @@ app.get("/category/:id", (req, res) => {
             return db.collection("products").find().toArray();
           }
           if (response === "high") {
-            return db.collection("products").find({ "rating.rate": { $gt: 4 } }).toArray();
+            return db
+              .collection("products")
+              .find({ "rating.rate": { $gt: 4 } })
+              .toArray();
           }
         }
       } else {
@@ -75,11 +78,23 @@ app.get("/category/:id", (req, res) => {
 });
 
 app.get("/products/:id", (req, res) => {
-  const prodId = req.params.id;
+  const prodId = new ObjectId(req.params.id);
   db.collection("products")
-  .findOne({ _id: new ObjectId(prodId) })
+    .findOne({ _id: prodId })
     .then((result) => {
-      res.json(result);
+      db.collection("products")
+        .find({ category: result.category, _id: { $ne: prodId } })
+        .toArray()
+        .then((relProds) => {
+          db.collection("categories")
+            .find({ title: result.category })
+            .toArray()
+            .then((cat) => {
+              result.category = cat[0].name;
+              result.relProds = relProds;
+              res.json(result);
+            });
+        });
     })
     .catch(() => {
       res.status(500).json({ error: "Could not fetch products" });

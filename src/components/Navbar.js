@@ -9,8 +9,23 @@ import Search from "../assets/search.png";
 import User from "../assets/user.png";
 import Cart from "../assets/cart.png";
 import Heart from "../assets/heart.png";
+import { useSelector, useDispatch } from "react-redux";
+import { useEffect } from "react";
+import { addItem } from "../utils/CartSlice";
 
 const Navbar = () => {
+  const cart = useSelector((store) => store.cart.items);
+  const dispatch = useDispatch();
+  useEffect(() => {
+    const storedCart = JSON.parse(window.localStorage.getItem("cart"));
+    // if (storedCart) {
+    //   Object.values(storedCart).forEach((item) => {
+    //     dispatch(addItem(item));
+    //   });
+    // }
+    console.log(storedCart);
+  }, []);
+
   return (
     <div>
       <div className="bg-app-green h-12 px-64 flex items-center justify-between  text-white">
@@ -50,11 +65,16 @@ const Navbar = () => {
             <Link to="/products">Contact Us</Link>
           </div>
         </div>
-        <div className="flex gap-6">
+        <div className="flex items-center gap-6 relative">
           <img className="w-6" src={Search} alt="Search" />
           <img className="w-6" src={Heart} alt="Favorites" />
-          <img className="w-6" src={Cart} alt="Cart" />
           <img className="w-6" src={User} alt="User Sign In" />
+          <img className="w-6" src={Cart} alt="Cart" />
+          {cart.length > 0 && (
+            <span className="absolute top-0 right-0 -mt-1 -mr-1 bg-red-600 text-white font-bold text-xs w-4 h-4 flex items-center justify-center rounded-full">
+              {cart.length}
+            </span>
+          )}
         </div>
       </div>
     </div>
