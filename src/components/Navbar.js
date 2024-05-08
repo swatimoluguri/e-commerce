@@ -9,22 +9,10 @@ import Search from "../assets/search.png";
 import User from "../assets/user.png";
 import Cart from "../assets/cart.png";
 import Heart from "../assets/heart.png";
-import { useSelector, useDispatch } from "react-redux";
-import { useEffect } from "react";
-import { addItem } from "../utils/CartSlice";
+import { useSelector } from "react-redux";
 
 const Navbar = () => {
   const cart = useSelector((store) => store.cart.items);
-  const dispatch = useDispatch();
-  useEffect(() => {
-    const storedCart = JSON.parse(window.localStorage.getItem("cart"));
-    // if (storedCart) {
-    //   Object.values(storedCart).forEach((item) => {
-    //     dispatch(addItem(item));
-    //   });
-    // }
-    console.log(storedCart);
-  }, []);
 
   return (
     <div>
@@ -46,7 +34,9 @@ const Navbar = () => {
       </div>
       <div className="flex flex-row px-44 py-6 items-center justify-between bg-white">
         <div>
-          <img className="w-44" src={Logo} alt="Logo" />
+          <Link to="/">
+            <img className="w-44" src={Logo} alt="Logo" />
+          </Link>
         </div>
         <div className="flex flex-row ">
           <div className="p-4 font-semibold">
@@ -54,9 +44,6 @@ const Navbar = () => {
           </div>
           <div className="p-4 font-semibold">
             <Link to="/products">Products</Link>
-          </div>
-          <div className="p-4 font-semibold">
-            <Link to="/products">Categories</Link>
           </div>
           <div className="p-4 font-semibold">
             <Link to="/products">About Us</Link>
@@ -69,10 +56,15 @@ const Navbar = () => {
           <img className="w-6" src={Search} alt="Search" />
           <img className="w-6" src={Heart} alt="Favorites" />
           <img className="w-6" src={User} alt="User Sign In" />
-          <img className="w-6" src={Cart} alt="Cart" />
+          <Link to="/cart">
+            <img className="w-6" src={Cart} alt="Cart" />
+          </Link>
           {cart.length > 0 && (
             <span className="absolute top-0 right-0 -mt-1 -mr-1 bg-red-600 text-white font-bold text-xs w-4 h-4 flex items-center justify-center rounded-full">
-              {cart.length}
+              {cart.reduce((acc, item) => {
+                acc += item.count;
+                return acc;
+              }, 0)}
             </span>
           )}
         </div>
