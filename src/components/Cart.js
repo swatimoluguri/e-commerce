@@ -7,11 +7,27 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import DetailsStrip from "./DetailsStrip";
 import EmptyCart from "../assets/empty-cart.jpg";
+import axios from "axios";
+import { useEffect, useState } from "react";
 
 const Cart = () => {
   const dispatch = useDispatch();
+  const [cartTotal, setCartTotal] = useState(0);
+  const [cartItems, setCartItems] = useState(0);
   const cart = useSelector((store) => store.cart.items);
   console.log(cart);
+  useEffect(() => {
+    let total = cart.reduce((acc, item) => {
+      acc += Math.round(item.price * 84) * item.count;
+      return acc;
+    }, 0);
+    let totalItems = cart.reduce((acc, item) => {
+      acc += item.count;
+      return acc;
+    }, 0);
+    setCartTotal(total);
+    setCartItems(totalItems);
+  }, [cart]);
 
   function handleReduceCount(id) {
     let item = {};
@@ -33,6 +49,36 @@ const Cart = () => {
 
   function handleClearCart() {
     dispatch(clearCart());
+  }
+
+  async function handleCheckout(val) {
+    const {data:{id}} = await axios.post("http://localhost:3000/checkout", {
+      val,
+    });
+
+    var options = {
+      "key": "rzp_test_vorhZ7wKh3AFzX", // Enter the Key ID generated from the Dashboard
+      "amount": "100", // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
+      "currency": "INR",
+      "name": "Swati",
+      "description": "Test",
+      "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQRY7zpT4pHNb8LZfnaP0xI7FYTkiZaYfPUhEaV1scVsQ&s",
+      "order_id":id, //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
+      "callback_url": "http://localhost:3000/checkout/payment-verification",
+      "prefill": {
+          "name": "Gaurav Kumar",
+          "email": "gaurav.kumar@example.com",
+          "contact": "9000090000"
+      },
+      "notes": {
+          "address": "Razorpay Corporate Office"
+      },
+      "theme": {
+          "color": "#3399cc"
+      }
+  };
+  var rzp1 = new window.Razorpay(options);
+  rzp1.open();
   }
   return (
     <div>
@@ -59,13 +105,15 @@ const Cart = () => {
                 {cart.map((item, index) => (
                   <tr key={index} className="border-b border-gray-200">
                     <td className="p-3 flex items-center gap-6">
-                      <div className="h-28 w-20 rounded-3xl">
-                        <img
-                          className="object-contain w-full h-full rounded-3xl"
-                          src={item.image}
-                          alt={item._id}
-                        />
-                      </div>
+                      <Link to={"/products/" + item._id} key={item._id}>
+                        <div className="h-28 w-20 rounded-3xl">
+                          <img
+                            className="object-contain w-full h-full rounded-3xl"
+                            src={item.image}
+                            alt={item._id}
+                          />
+                        </div>
+                      </Link>
                       {item.title}
                     </td>
                     <td className="p-3 text-right">
@@ -129,12 +177,7 @@ const Cart = () => {
             <table className="w-full">
               <tr>
                 <th className="text-left p-2">Items</th>
-                <td className="text-right p-2">
-                  {cart.reduce((acc, item) => {
-                    acc += item.count;
-                    return acc;
-                  }, 0)}
-                </td>
+                <td className="text-right p-2">{cartItems}</td>
               </tr>
               <tr>
                 <th className="text-left p-2">Sub Total</th>
@@ -155,14 +198,13 @@ const Cart = () => {
             <div className="flex justify-between p-4">
               <div>Total</div>
               <div>
-                ₹
-                {cart.reduce((acc, item) => {
-                  acc += Math.round(item.price * 84) * item.count;
-                  return acc;
-                }, 0)}
+                ₹{cartTotal}
               </div>
             </div>
-            <div className="bg-app-green text-white w-fit px-4 py-2 text-lg font-semibold rounded-full mx-auto my-4">
+            <div
+              onClick={() => handleCheckout(cartTotal)}
+              className="cursor-pointer bg-app-green text-white w-fit px-4 py-2 text-lg font-semibold rounded-full mx-auto my-4"
+            >
               Proceed to Checkout
             </div>
           </div>

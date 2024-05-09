@@ -1,10 +1,26 @@
 const express = require("express");
+const cors = require("cors");
+const morgan = require("morgan");
 const { ObjectId } = require("mongodb");
-const { connectToDb, getDb } = require("./db");
+const { connectToDb, getDb, getOrderModel } = require("./db");
 const app = express();
-app.use(express.json());
-let db;
+const Razorpay = require("razorpay");
+const crypto = require("crypto");
 
+app.use(express.urlencoded({ extended: true }));
+
+const razorpay = new Razorpay({
+  key_id: "rzp_test_vorhZ7wKh3AFzX",
+  key_secret: "mk80OiNmNFnZIwmKYweWqdMj",
+});
+
+//middlewares
+app.use(express.json());
+app.use(cors());
+app.use(morgan("dev"));
+
+//connections
+let db;
 connectToDb((err) => {
   if (!err) {
     app.listen(3000, () => {
@@ -15,6 +31,8 @@ connectToDb((err) => {
     console.log(err);
   }
 });
+
+//routes
 
 app.get("/products", (req, res) => {
   let products = [];
@@ -99,4 +117,54 @@ app.get("/products/:id", (req, res) => {
     .catch(() => {
       res.status(500).json({ error: "Could not fetch products" });
     });
+});
+
+app.post("/checkout", async (req, res) => {
+  try {
+    const amount = req.body.val;
+    var options = {
+      amount: 100,
+      currency: "INR",
+    };
+    const order = await razorpay.orders.create(options);
+    const orderModel = getOrderModel();
+    await orderModel.insertOne({
+      order_id: order.id,
+      amount: amount,
+    });
+    res.json(order);
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+app.post("/checkout/payment-verification", async (req, res) => {
+  const { razorpay_payment_id, razorpay_order_id, razorpay_signature } =
+    req.body;
+  const body_data = razorpay_order_id + "|" + razorpay_payment_id;
+  const response = crypto
+    .createHmac("sha256", "mk80OiNmNFnZIwmKYweWqdMj")
+    .update(body_data)
+    .digest("hex");
+  const isValid = response === razorpay_signature;
+  if (isValid) {
+    const orderModel = getOrderModel();
+    await orderModel.findOne(
+      {
+        order_id: razorpay_order_id,
+      },
+      {
+        $set: {
+          razorpay_payment_id: razorpay_payment_id,
+          razorpay_signature: razorpay_signature,
+        },
+      }
+    );
+    res.redirect(`/success?payment_id=${razorpay_payment_id}`
+    );
+  } else {
+    res.redirect("/failed");
+  }
+  return;
 });
