@@ -1,9 +1,5 @@
-import LogoInvert from "../assets/logo_invert.png";
-import Twitter from "../assets/twitter.png";
-import Facebook from "../assets/facebook.png";
-import Instagram from "../assets/instagram.png";
-import Pinterest from "../assets/pinterest.png";
-import Youtube from "../assets/youtube.png";
+import LogoInvert from "../../assets/logo_invert.png";
+import SocialMedia from "../Contact/SocialMedia";
 
 const Footer = () => {
   return (
@@ -19,13 +15,7 @@ const Footer = () => {
               eiusmod tempor incididunt ut labore et dolore magna aliqua.
             </p>
           </div>
-          <div className="flex gap-2">
-            <img className="w-6" src={Facebook} alt="Facebook" />
-            <img className="w-6" src={Instagram} alt="Instagram" />
-            <img className="w-6" src={Twitter} alt="Twitter" />
-            <img className="w-6" src={Pinterest} alt="Pinterest" />
-            <img className="w-6" src={Youtube} alt="Youtube" />
-          </div>
+          <SocialMedia/>
         </div>
         <div className="flex flex-col gap-3">
           <h2 className="font-bold text-xl mb-4">Company</h2>

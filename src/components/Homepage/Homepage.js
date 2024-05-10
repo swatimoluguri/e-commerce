@@ -1,9 +1,9 @@
 import Banner from "./Banner";
-import DetailsStrip from "./DetailsStrip";
-import Collections from "./Collections";
+import DetailsStrip from "../Partials/DetailsStrip";
+import Collections from "../Partials/Collections";
 import SaleBanner from "./SaleBanner";
 import FaqAccordion from "./FaqAccordion";
-import Heading from "./Heading";
+import Heading from "../Partials/Heading";
 import Newsletter from "./Newsletter";
 
 

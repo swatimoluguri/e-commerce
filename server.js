@@ -2,19 +2,21 @@ const express = require("express");
 const cors = require("cors");
 const morgan = require("morgan");
 const { ObjectId } = require("mongodb");
-const { connectToDb, getDb, getOrderModel } = require("./db");
-const app = express();
+const { connectToDb, getDb, getOrderModel, getUserModel, getCustomerEnquiries } = require("./db");
 const Razorpay = require("razorpay");
 const crypto = require("crypto");
+const { OAuth2Client } = require("google-auth-library");
 
-app.use(express.urlencoded({ extended: true }));
-
+const app = express();
+const client = new OAuth2Client();
 const razorpay = new Razorpay({
   key_id: "rzp_test_vorhZ7wKh3AFzX",
   key_secret: "mk80OiNmNFnZIwmKYweWqdMj",
 });
 
-//middlewares
+// Middleware setup
+app.use(express.static('build'));
+app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cors());
 app.use(morgan("dev"));
@@ -23,8 +25,8 @@ app.use(morgan("dev"));
 let db;
 connectToDb((err) => {
   if (!err) {
-    app.listen(3000, () => {
-      console.log("App listening on port 3000");
+    app.listen(5000, () => {
+      console.log("App listening on port 5000");
     });
     db = getDb();
   } else {
@@ -161,10 +163,50 @@ app.post("/checkout/payment-verification", async (req, res) => {
         },
       }
     );
-    res.redirect(`/success?payment_id=${razorpay_payment_id}`
-    );
+    res.redirect(`/success?payment_id=${razorpay_payment_id}`);
   } else {
     res.redirect("/failed");
   }
   return;
+});
+
+app.post("/google-auth", async (req, res) => {
+  const { credential, client_id } = req.body;
+  try {
+    const ticket = await client.verifyIdToken({
+      idToken: credential,
+      audience: client_id,
+    });
+    const payload = ticket.getPayload();
+    const userid = payload["sub"];
+    res.status(200).json({ payload });
+  } catch (err) {
+    res.status(400).json({ err });
+  }
+});
+
+app.post("/sign-up", async (req, res) => {
+  const userModel = getUserModel();
+  const newUser = await userModel
+    .insertOne(req.body.formData)
+    .then(() => {
+      res.redirect("http://localhost:3001/");
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+});
+
+app.post("/contact-us", async (req, res) => {
+  try {
+    // add to database
+    res.redirect("/");
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Internal Server Error");
+  }
+});
+
+app.get("/",(req,res)=>{
+  res.sendFile(__dirname + '/build/index.html');
 });

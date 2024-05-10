@@ -1,5 +1,5 @@
-import Heading from "./Heading";
-import Collections from "./Collections";
+import Heading from "../Partials/Heading";
+import Collections from "../Partials/Collections";
 
 const Products = () => {
   return (

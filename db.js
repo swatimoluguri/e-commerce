@@ -15,5 +15,7 @@ module.exports={
         })
     },
     getDb:()=>dbConnection,
-    getOrderModel: () => dbConnection.collection('orders')
+    getOrderModel: () => dbConnection.collection('orders'),
+    getUserModel: () => dbConnection.collection('users'),
+    getCustomerEnquiries: () => dbConnection.collection('customer-enquiries')
 };

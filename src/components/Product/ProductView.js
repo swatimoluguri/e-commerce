@@ -1,7 +1,7 @@
 import { useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
-import DetailsStrip from "./DetailsStrip";
-import Heading from "./Heading";
+import DetailsStrip from "../Partials/DetailsStrip";
+import Heading from "../Partials/Heading";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faStar as solidStar,
@@ -10,7 +10,7 @@ import {
 import { faStar as regularStar } from "@fortawesome/free-regular-svg-icons";
 import RelatedProducts from "./RelatedProducts";
 import { useDispatch } from "react-redux";
-import { addItem } from "../utils/CartSlice";
+import { addItem } from "../../utils/CartSlice";
 
 const ProductView = () => {
   const { productId } = useParams();

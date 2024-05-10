@@ -1,12 +1,12 @@
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
-import Heading from "./Heading";
-import { updateItem, deleteItem, clearCart } from "../utils/CartSlice";
+import Heading from "../Partials/Heading";
+import { updateItem, deleteItem, clearCart } from "../../utils/CartSlice";
 import { useDispatch } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
-import DetailsStrip from "./DetailsStrip";
-import EmptyCart from "../assets/empty-cart.jpg";
+import DetailsStrip from "../Partials/DetailsStrip";
+import EmptyCart from "../../assets/empty-cart.jpg";
 import axios from "axios";
 import { useEffect, useState } from "react";
 

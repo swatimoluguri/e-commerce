@@ -7,6 +7,7 @@
     "@fortawesome/free-regular-svg-icons": "^6.5.2",
     "@fortawesome/free-solid-svg-icons": "^6.5.2",
     "@fortawesome/react-fontawesome": "^0.2.0",
+    "@react-oauth/google": "^0.12.1",
     "@reduxjs/toolkit": "^2.2.3",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
@@ -14,7 +15,9 @@
     "axios": "^1.6.8",
     "cors": "^2.8.5",
     "express": "^4.19.2",
+    "express-react-views": "^0.11.0",
     "font-awesome": "^4.7.0",
+    "google-auth-library": "^9.9.0",
     "mongodb": "^6.5.0",
     "mongoose": "^8.3.4",
     "morgan": "^1.10.0",
@@ -54,5 +57,6 @@
   },
   "devDependencies": {
     "tailwindcss": "^3.4.3"
-  }
+  },
+  "proxy": "http://localhost:5000"
 }

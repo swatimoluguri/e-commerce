@@ -1,6 +1,6 @@
-import Bg from "../assets/bg.jpg";
-import Bag from "../assets/bag.png";
-import Effect from "../assets/effect.png";
+import Bg from "../../assets/bg.jpg";
+import Bag from "../../assets/bag.png";
+import Effect from "../../assets/effect.png";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowRight,faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 import Card from "./Card";

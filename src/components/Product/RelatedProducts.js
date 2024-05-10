@@ -1,4 +1,4 @@
-import Heading from "./Heading";
+import Heading from "../Partials/Heading";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faStar } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";

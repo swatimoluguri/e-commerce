@@ -1,6 +1,6 @@
-import Shipping from "../assets/shipping.png";
-import Payment from "../assets/payment.png";
-import Support from "../assets/support.png";
+import Shipping from "../../assets/shipping.png";
+import Payment from "../../assets/payment.png";
+import Support from "../../assets/support.png";
 
 const DetailsStrip = () => {
   return (
