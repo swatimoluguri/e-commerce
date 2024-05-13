@@ -2,7 +2,14 @@ const express = require("express");
 const cors = require("cors");
 const morgan = require("morgan");
 const { ObjectId } = require("mongodb");
-const { connectToDb, getDb, getOrderModel, getUserModel, getCustomerEnquiries } = require("./db");
+const {
+  connectToDb,
+  getDb,
+  getOrderModel,
+  getUserModel,
+  getCustomerEnquiries,
+  getNewsletter,
+} = require("./db");
 const Razorpay = require("razorpay");
 const crypto = require("crypto");
 const { OAuth2Client } = require("google-auth-library");
@@ -15,7 +22,7 @@ const razorpay = new Razorpay({
 });
 
 // Middleware setup
-app.use(express.static('build'));
+app.use(express.static("build"));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cors());
@@ -190,7 +197,7 @@ app.post("/sign-up", async (req, res) => {
   const newUser = await userModel
     .insertOne(req.body.formData)
     .then(() => {
-      res.redirect("http://localhost:3001/");
+      res.status(200).json({ redirect: '/' });
     })
     .catch((err) => {
       console.log(err);
@@ -199,14 +206,24 @@ app.post("/sign-up", async (req, res) => {
 
 app.post("/contact-us", async (req, res) => {
   try {
-    // add to database
-    res.redirect("/");
+    const enquiryModel = getCustomerEnquiries();
+    await enquiryModel.insertOne(req.body.formData).then((result) => {
+      res.status(200).json({ success: result.insertedId });
+    });
   } catch (error) {
     console.error(error);
     res.status(500).send("Internal Server Error");
   }
 });
 
-app.get("/",(req,res)=>{
-  res.sendFile(__dirname + '/build/index.html');
+app.post("/newsletter", async (req, res) => {
+  try {
+    const newsletterModel = getNewsletter();
+    await newsletterModel.insertOne(req.body).then((result) => {
+      res.status(200).json({ success: result.insertedId });
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Internal Server Error");
+  }
 });

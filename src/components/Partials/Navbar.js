@@ -4,16 +4,16 @@ import Search from "../../assets/search.png";
 import User from "../../assets/user.png";
 import Cart from "../../assets/cart.png";
 import Heart from "../../assets/heart.png";
-import { useSelector } from "react-redux";
 import { faBars, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import SocialMedia from "../Contact/SocialMedia";
+import SocialMedia from "./SocialMedia";
+import { useSelector } from "react-redux";
 
 const Navbar = () => {
-  const cart = useSelector((store) => store.cart.items);
+  const cart = useSelector((store) => store.cart);
   const [menuOpen, setMenuOpen] = useState(false);
-
+  const user = useSelector((store) => store.user);
   const toggleMenu = () => {
     setMenuOpen(!menuOpen);
   };
@@ -22,12 +22,12 @@ const Navbar = () => {
       {/* Top Navbar */}
       <div className="bg-app-green h-12 px-4 md:px-8 lg:px-12 xl:px-16 2xl:px-24 flex items-center justify-between text-white">
         <div>Call Us : +91-98765-43210</div>
-        <div>
+        {user.user.length>0?<div>Hi {user.user} !  <Link to="/products"><span className="underline text-app-yellow font-semibold pl-4">Let's shop </span></Link></div>:(<div>
           Sign Up now and get 25% OFF for your first order.{" "}
           <span className="text-app-yellow underline font-semibold pl-4">
             <Link to="/signup">Sign Up Now</Link>
           </span>
-        </div>
+        </div>)}
         <SocialMedia/>
       </div>
 
@@ -62,7 +62,7 @@ const Navbar = () => {
           </Link>
           {cart.length > 0 && (
             <span className="absolute top-0 right-0 -mt-1 -mr-1 bg-red-600 text-white font-bold text-xs w-4 h-4 flex items-center justify-center rounded-full">
-              {cart.reduce((acc, item) => {
+              {cart.items.reduce((acc, item) => {
                 acc += item.count;
                 return acc;
               }, 0)}

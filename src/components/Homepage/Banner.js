@@ -5,6 +5,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowRight,faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 import Card from "./Card";
 import React, { useState,useEffect } from "react";
+import { Link } from "react-router-dom";
 
 const Banner = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -13,11 +14,13 @@ const Banner = () => {
       src={"https://fakestoreapi.com/img/71li-ujtlUL._AC_UX679_.jpg"}
       desc={"Mens Cotton Jacket"}
       price={"4,679"}
+      id={"6631d007ec357355a9818c99"}
     />,
     <Card
       src={"https://fakestoreapi.com/img/81QpkIctqPL._AC_SX679_.jpg"}
       desc={'Acer SB220Q 21.5" Full HD'}
       price={"49,999"}
+      id={"6631d007ec357355a9818ca3"}
     />,
   ];
   useEffect(() => {
@@ -66,12 +69,11 @@ const Banner = () => {
             eiusmod tempor incididunt ut labore et dolore magna aliqua.
           </p>
           <div className="flex items-center gap-12">
+          <Link to="/products">
             <button className="bg-app-green px-6 py-2 text-white rounded-3xl text-lg font-medium">
               Shop Now <FontAwesomeIcon icon={faArrowRight} />
             </button>
-            <p className="font-medium text-lg border-b-2 border-black ">
-              View All Products
-            </p>
+            </Link>
           </div>
         </div>
         <div className="w-1/2 flex flex-col">

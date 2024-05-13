@@ -1,8 +1,13 @@
 import Clothes from "../../assets/clothes.jpg";
 import Heading from "../Partials/Heading";
 import { Link } from "react-router-dom";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
+import bcrypt from "bcryptjs";
+import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import {addUser} from "../../utils/UserSlice";
+import { useSelector } from "react-redux";
 
 const Signup = () => {
   const [formData, setFormData] = useState({
@@ -11,6 +16,13 @@ const Signup = () => {
     email: "",
     password: "",
   });
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const user = useSelector((store) => store.user);
+
+  useEffect(() => {
+    if (user.user.length > 0) navigate("/");
+  }, [user]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -20,18 +32,26 @@ const Signup = () => {
     });
   };
 
-  const handleSignUp = async(e) => {
+  const handleSignUp = async (e) => {
     e.preventDefault();
-    const response = await axios.post("http://localhost:3000/sign-up", {
-        formData,
+    const hashedPassword = await bcrypt.hash(formData.password, 10);
+    const userData = {
+      firstName: formData.firstName,
+      lastName: formData.lastName,
+      email: formData.email,
+      password: hashedPassword,
+    };
+    const response = await axios.post("/sign-up", {
+      formData: userData,
     });
-    console.log(response);
+    dispatch(addUser(formData.firstName+' '+formData.lastName));
     setFormData({
-      firstName: '',
-      lastName: '',
-      email: '',
-      password: ''
+      firstName: "",
+      lastName: "",
+      email: "",
+      password: "",
     });
+    navigate(response.data.redirect);
   };
 
   return (
@@ -111,17 +131,20 @@ const Signup = () => {
                 I agree with Terms & Conditions and Privacy Policy
               </span>
             </div>
-            <div className="p-4">
-              <button type='submit' className="w-full bg-app-green text-white px-4 py-3 rounded-full my-4 hover:bg-app-dark-green">
+            <div>
+              <button
+                type="submit"
+                className="w-full bg-app-green text-white px-4 py-3 rounded-full my-4 hover:bg-app-dark-green"
+              >
                 Sign Up
               </button>
 
               <hr />
-              <p className="my-4 text-gray-500">Sign Up with</p>
-              <p>Google Sign Up</p>
+              {/* <p className="my-4 text-gray-500">Sign Up with</p>
+              <p>Google Sign Up</p> */}
               <p className="font-bold my-4">
                 Already have an account?{" "}
-                <Link className="text-app-green " to="/signin">
+                <Link className="text-app-green hover:underline " to="/signin">
                   Sign In
                 </Link>
               </p>

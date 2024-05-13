@@ -14,14 +14,13 @@ const Cart = () => {
   const dispatch = useDispatch();
   const [cartTotal, setCartTotal] = useState(0);
   const [cartItems, setCartItems] = useState(0);
-  const cart = useSelector((store) => store.cart.items);
-  console.log(cart);
+  const cart = useSelector((store) => store.cart);
   useEffect(() => {
-    let total = cart.reduce((acc, item) => {
+    let total = cart.items.reduce((acc, item) => {
       acc += Math.round(item.price * 84) * item.count;
       return acc;
     }, 0);
-    let totalItems = cart.reduce((acc, item) => {
+    let totalItems = cart.items.reduce((acc, item) => {
       acc += item.count;
       return acc;
     }, 0);
@@ -85,7 +84,7 @@ const Cart = () => {
       <div className="flex flex-col items-center bg-[url('assets/bg.jpg')] bg-cover	">
         <Heading text="Shopping Cart" heading="" highlight="" />
       </div>
-      {cart.reduce((acc, item) => {
+      {cart.items.reduce((acc, item) => {
         acc += item.count;
         return acc;
       }, 0) > 0 ? (
@@ -102,7 +101,7 @@ const Cart = () => {
                 </tr>
               </thead>
               <tbody>
-                {cart.map((item, index) => (
+                {cart.items.map((item, index) => (
                   <tr key={index} className="border-b border-gray-200">
                     <td className="p-3 flex items-center gap-6">
                       <Link to={"/products/" + item._id} key={item._id}>
@@ -183,7 +182,7 @@ const Cart = () => {
                 <th className="text-left p-2">Sub Total</th>
                 <td className="text-right p-2">
                   ₹
-                  {cart.reduce((acc, item) => {
+                  {cart.items.reduce((acc, item) => {
                     acc += Math.round(item.price * 84) * item.count;
                     return acc;
                   }, 0)}

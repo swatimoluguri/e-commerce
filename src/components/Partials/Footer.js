@@ -1,5 +1,6 @@
 import LogoInvert from "../../assets/logo_invert.png";
-import SocialMedia from "../Contact/SocialMedia";
+import SocialMedia from "./SocialMedia";
+import { Link } from "react-router-dom";
 
 const Footer = () => {
   return (
@@ -19,24 +20,24 @@ const Footer = () => {
         </div>
         <div className="flex flex-col gap-3">
           <h2 className="font-bold text-xl mb-4">Company</h2>
-          <p>About Us</p>
-          <p>Blog</p>
-          <p>Contact Us</p>
-          <p>Career</p>
+          <Link to="#"><p className="hover:text-app-yellow">About Us</p></Link>
+          <Link to="#"><p className="hover:text-app-yellow">Blog</p></Link>
+          <Link to="#"><p className="hover:text-app-yellow">Contact Us</p></Link>
+          <Link to="#"><p className="hover:text-app-yellow">Career</p></Link>
         </div>
         <div className="flex flex-col gap-3">
           <h2 className="font-bold text-xl mb-4">Customer Service</h2>
-          <p>My Account</p>
-          <p>Track my Order</p>
-          <p>Return</p>
-          <p>FAQ</p>
+          <Link to="#"><p className="hover:text-app-yellow">My Account</p></Link>
+          <Link to="#"><p className="hover:text-app-yellow">Track my Order</p></Link>
+          <Link to="#"><p className="hover:text-app-yellow">Return</p></Link>
+          <Link to="#"><p className="hover:text-app-yellow">FAQ</p></Link>
         </div>
         <div className="flex flex-col gap-3">
           <h2 className="font-bold text-xl mb-4">Important Links</h2>
-          <p>Privacy</p>
-          <p>User Terms and Conditions</p>
-          <p>Return Policy</p>
-          <p>Settings</p>
+          <Link to="#"><p className="hover:text-app-yellow">Privacy</p></Link>
+          <Link to="#"><p className="hover:text-app-yellow">User Terms and Conditions</p></Link>
+          <Link to="#"><p className="hover:text-app-yellow">Return Policy</p></Link>
+          <Link to="#"><p className="hover:text-app-yellow">Settings</p></Link>
         </div>
       </div>
       <div className="bg-app-yellow h-12 flex items-center px-20 text-black font-semibold">

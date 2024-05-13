@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
+import { Link } from "react-router-dom";
 
 const SaleBanner = () => {
   const dayRef = useRef(null);
@@ -82,9 +83,11 @@ const SaleBanner = () => {
             <p className="text-gray-500">Seconds</p>
           </div>
         </div>
-        <button className="bg-app-green px-6 py-2 text-white rounded-3xl text-lg font-medium">
-          Shop Now <FontAwesomeIcon icon={faArrowRight} />
-        </button>
+        <Link to="/products">
+          <button className="bg-app-green px-6 py-2 text-white rounded-3xl text-lg font-medium">
+            Shop Now <FontAwesomeIcon icon={faArrowRight} />
+          </button>
+        </Link>
       </div>
       <div className="bg-[url('assets/package.jpg')] py-12 rounded-xl w-1/2 bg-cover"></div>
     </div>
