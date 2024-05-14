@@ -16,11 +16,11 @@ const Cart = () => {
   const [cartItems, setCartItems] = useState(0);
   const cart = useSelector((store) => store.cart);
   useEffect(() => {
-    let total = cart.items.reduce((acc, item) => {
+    let total = cart.cart.items.reduce((acc, item) => {
       acc += Math.round(item.price * 84) * item.count;
       return acc;
     }, 0);
-    let totalItems = cart.items.reduce((acc, item) => {
+    let totalItems = cart.cart.items.reduce((acc, item) => {
       acc += item.count;
       return acc;
     }, 0);
@@ -84,7 +84,7 @@ const Cart = () => {
       <div className="flex flex-col items-center bg-[url('assets/bg.jpg')] bg-cover	">
         <Heading text="Shopping Cart" heading="" highlight="" />
       </div>
-      {cart.items.reduce((acc, item) => {
+      {cart.cart.items.reduce((acc, item) => {
         acc += item.count;
         return acc;
       }, 0) > 0 ? (
@@ -101,7 +101,7 @@ const Cart = () => {
                 </tr>
               </thead>
               <tbody>
-                {cart.items.map((item, index) => (
+                {cart.cart.items.map((item, index) => (
                   <tr key={index} className="border-b border-gray-200">
                     <td className="p-3 flex items-center gap-6">
                       <Link to={"/products/" + item._id} key={item._id}>
@@ -118,8 +118,8 @@ const Cart = () => {
                     <td className="p-3 text-right">
                       ₹{Math.round(item.price * 84)}
                     </td>
-                    <td className="p-3 text-right">
-                      <div className="border border-gray-200 rounded-full flex items-center text-black  gap-5">
+                    <td className="p-3 ">
+                      <div className="w-fit border border-gray-200 rounded-full flex items-center text-black  gap-5">
                         <div
                           className="cursor-pointer border-r border-gray-200 px-4 py-2"
                           onClick={() => handleReduceCount(item.id)}
@@ -182,7 +182,7 @@ const Cart = () => {
                 <th className="text-left p-2">Sub Total</th>
                 <td className="text-right p-2">
                   ₹
-                  {cart.items.reduce((acc, item) => {
+                  {cart.cart.items.reduce((acc, item) => {
                     acc += Math.round(item.price * 84) * item.count;
                     return acc;
                   }, 0)}

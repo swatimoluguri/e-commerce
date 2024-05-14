@@ -9,10 +9,15 @@ const {
   getUserModel,
   getCustomerEnquiries,
   getNewsletter,
+  getResetPwd,
 } = require("./db");
 const Razorpay = require("razorpay");
 const crypto = require("crypto");
 const { OAuth2Client } = require("google-auth-library");
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+const { Recipient, EmailParams, Sender, MailerSend } = require("mailersend");
+const { now } = require("mongoose");
 
 const app = express();
 const client = new OAuth2Client();
@@ -20,6 +25,20 @@ const razorpay = new Razorpay({
   key_id: "rzp_test_vorhZ7wKh3AFzX",
   key_secret: "mk80OiNmNFnZIwmKYweWqdMj",
 });
+
+const mailerSend = new MailerSend({
+  apiKey:
+    "mlsn.0fb548184c937abdfdba710dd5599c559941130baf7447f5a08ea10b80253290",
+});
+
+const generateSecretKey = () => {
+  return crypto.randomBytes(32).toString("hex");
+};
+
+function generateOTP() {
+  const otp = Math.floor(1000 + Math.random() * 9000);
+  return otp.toString();
+}
 
 // Middleware setup
 app.use(express.static("build"));
@@ -197,11 +216,37 @@ app.post("/sign-up", async (req, res) => {
   const newUser = await userModel
     .insertOne(req.body.formData)
     .then(() => {
-      res.status(200).json({ redirect: '/' });
+      res.status(200).json({ redirect: "/" });
     })
     .catch((err) => {
       console.log(err);
     });
+});
+
+app.post("/sign-in", async (req, res) => {
+  const { email, password } = req.body.formData;
+  const userModel = getUserModel();
+  try {
+    const user = await userModel.findOne({ email: email });
+    if (!user) {
+      return res
+        .status(400)
+        .json({ message: "No user found for entered email" });
+    }
+    const passwordMatch = await bcrypt.compare(password, user.password);
+    if (!passwordMatch) {
+      return res.status(400).json({ message: "Invalid Password" });
+    }
+    const secretKey = generateSecretKey();
+    const token = jwt.sign({ userId: user._id }, secretKey, {
+      expiresIn: "1h",
+    });
+    const username = user.firstName + " " + user.lastName;
+    res.status(200).json({ redirect: "/", token, username });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error" });
+  }
 });
 
 app.post("/contact-us", async (req, res) => {
@@ -225,5 +270,118 @@ app.post("/newsletter", async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).send("Internal Server Error");
+  }
+});
+
+app.post("/send-mail", async (req, res) => {
+  const email = req.body.email;
+  const userModel = getUserModel();
+  try {
+    const user = await userModel.findOne({ email: email });
+    if (!user) {
+      return res
+        .status(400)
+        .json({ message: "No user found for entered email" });
+    }
+    const sentFrom = new Sender(
+      "swati@trial-0p7kx4x8kn2g9yjr.mlsender.net",
+      "Swati"
+    );
+    const recipients = [new Recipient(email)];
+    const otp = generateOTP();
+    const resetOTP = getResetPwd();
+    try {
+      await resetOTP
+        .insertOne({ email: email, otp: otp, time: now(), status: 0 })
+        .then(async () => {
+          const emailParams = new EmailParams()
+            .setFrom(sentFrom)
+            .setTo(recipients)
+            .setReplyTo(sentFrom)
+            .setSubject("Password recovery for Shoppy")
+            .setHtml(
+              "<strong>Please use " +
+                otp +
+                " to reset your password.</strong><br><br><i>Keep Shopping with Shoppy :)</i>"
+            );
+
+          await mailerSend.email
+            .send(emailParams)
+            .then(() => {
+              res.status(200).json({ redirect: "/otp-verify" });
+            })
+            .catch((error) => {
+              return res.status(400).json({
+                message: "Failed to send email. Please try again in some time.",
+              });
+            });
+        });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Server error" });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+app.post("/verify-otp", async (req, res) => {
+  const { otp, email } = req.body;
+  const userModel = getUserModel();
+  try {
+    const user = await userModel.findOne({ email: email });
+    if (!user) {
+      return res
+        .status(400)
+        .json({ message: "No user found for entered email" });
+    }
+    const otpModel = getResetPwd();
+    const otpRecord = await otpModel.findOne(
+      { email: email },
+      { sort: { time: -1 } }
+    );
+    if (otpRecord) {
+      if (!(otp === otpRecord.otp)) {
+        return res.status(400).json({ message: "Invalid OTP entered" });
+      }
+      if (otp === otpRecord.otp && otpRecord.status === 1) {
+        return res.status(400).json({ message: "Entered OTP has expired." });
+      }
+      if (otp === otpRecord.otp && otpRecord.status === 0) {
+        await otpModel.findOneAndUpdate(
+          { email: email },
+          { $set: { status: 1 } },
+          { sort: { time: -1 } }
+        );
+        res.status(200).json({ redirect: "/", email });
+      }
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+app.post("/change-password", async (req, res) => {
+  const { newPassword, email } = req.body;
+  const userModel = getUserModel();
+  try {
+    const user = await userModel.findOne({ email: email });
+    if (!user) {
+      return res
+        .status(400)
+        .json({ message: "No user found for entered email" });
+    }else{
+      await userModel.findOneAndUpdate(
+        { email: email },
+        { $set: { password: newPassword } }
+      ).then(()=>{
+        res.status(200).json({ redirect: "/signin" });
+      });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error" });
   }
 });

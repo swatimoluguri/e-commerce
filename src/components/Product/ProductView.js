@@ -4,8 +4,10 @@ import DetailsStrip from "../Partials/DetailsStrip";
 import Heading from "../Partials/Heading";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
+  faHeart,
   faStar as solidStar,
   faStarHalfAlt,
+  faShoppingCart
 } from "@fortawesome/free-solid-svg-icons";
 import { faStar as regularStar } from "@fortawesome/free-regular-svg-icons";
 import RelatedProducts from "./RelatedProducts";
@@ -35,7 +37,7 @@ const ProductView = () => {
   }, [productId]);
 
   const fetchProduct = (productId) => {
-    fetch("http://localhost:3000/products/" + productId)
+    fetch("/products/" + productId)
       .then((res) => res.json())
       .then((result) => {
         setProduct(result);
@@ -60,7 +62,7 @@ const ProductView = () => {
     dispatch(addItem(item));
   }
 
-  function handleBuyNow() {}
+  function handleAddToFav() {}
 
   return (
     <div>
@@ -124,7 +126,7 @@ const ProductView = () => {
                   ₹{Math.round(product.price * 84)}
                 </h1>
               </div>
-              <div className="w-2/3 text-gray-500">
+              <div className="w-2/3 text-gray-500 text-justify">
                 <p>{product.description}</p>
               </div>
               <div className="flex items-center gap-5 mt-4">
@@ -144,16 +146,22 @@ const ProductView = () => {
                   </div>
                 </div>
                 <div
-                  className="cursor-pointer hover:bg-app-dark-green rounded-full bg-app-green text-white px-4 py-2"
+                  className="flex items-center cursor-pointer hover:bg-app-dark-green rounded-full bg-app-green text-white px-4 py-2"
                   onClick={handleAddToCart}
-                >
+                ><FontAwesomeIcon
+                className="text-app-yellow mr-2"
+                icon={faShoppingCart}
+              />
                   Add to Cart
                 </div>
                 <div
-                  className="cursor-pointer hover:bg-app-dark-yellow bg-app-yellow text-black rounded-full  px-4 py-2"
-                  onClick={handleBuyNow}
+                  className="flex items-center cursor-pointer hover:bg-app-dark-yellow bg-app-yellow text-black rounded-full  px-4 py-2"
+                  onClick={handleAddToFav}
                 >
-                  Buy Now
+                  <FontAwesomeIcon
+                      className="text-app-green mr-2"
+                      icon={faHeart}
+                    /><p>Add to Fav</p>
                 </div>
               </div>
             </div>

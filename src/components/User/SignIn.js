@@ -3,14 +3,20 @@ import Heading from "../Partials/Heading";
 import { Link } from "react-router-dom";
 import React, { useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { addUser } from "../../utils/UserSlice";
+import { useSelector } from "react-redux";
 
 const SignIn = () => {
   const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
     email: "",
     password: "",
   });
+  const [error, setError] = useState(null);
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const user = useSelector((store) => store.user);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -18,20 +24,29 @@ const SignIn = () => {
       ...formData,
       [name]: value,
     });
+    setError(null);
   };
 
   const handleSignUp = async (e) => {
     e.preventDefault();
-    const response = await axios.post("http://localhost:3000/sign-in", {
-      formData,
-    });
-    console.log(response);
-    setFormData({
-      firstName: "",
-      lastName: "",
-      email: "",
-      password: "",
-    });
+    await axios
+      .post("/sign-in", {
+        formData,
+      })
+      .then((response) => {
+        dispatch(addUser(response.data.username));
+        setFormData({
+          email: "",
+          password: "",
+        });
+        setError(null);
+        navigate(response.data.redirect);
+      })
+      .catch((error) => {
+        if (error.response && error.response.status === 400) {
+          setError(error.response.data.message);
+        }
+      });
   };
   return (
     <div className="flex flex-col">
@@ -48,7 +63,7 @@ const SignIn = () => {
           </div>
           <form onSubmit={handleSignUp}>
             <div className="w-full">
-              <label className="font-bold w-full" for="email">
+              <label className="font-bold w-full" htmlFor="email">
                 Email <sup>*</sup>
               </label>
               <input
@@ -61,7 +76,7 @@ const SignIn = () => {
               />
             </div>
             <div>
-              <label className="font-bold w-full" for="password">
+              <label className="font-bold w-full" htmlFor="password">
                 Password <sup>*</sup>
               </label>
               <input
@@ -79,14 +94,20 @@ const SignIn = () => {
                 type="submit"
                 className="w-full bg-app-green text-white px-4 py-3 rounded-full my-4 hover:bg-app-dark-green"
               >
-                Sign Up
+                Sign In
               </button>
               <hr />
-              <p className="font-bold my-4">
-                <Link className="text-app-green hover:underline " to="/signin">
-                  Forgot Password?
-                </Link>
-              </p>
+              <div className="flex justify-between items-center">
+                <p className="font-bold my-4">
+                  <Link
+                    className="text-app-green hover:underline "
+                    to="/forgot-password"
+                  >
+                    Forgot Password?
+                  </Link>
+                </p>
+                {error && <div className="text-red-500 font-bold">{error}</div>}
+              </div>
             </div>
           </form>
         </div>

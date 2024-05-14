@@ -73,7 +73,7 @@ const Signup = () => {
           <form onSubmit={handleSignUp}>
             <div className="flex gap-4 mt-6 w-full justify-between">
               <div className="flex-col w-1/2">
-                <label className="font-bold" for="firstname">
+                <label className="font-bold" htmlFor="firstname">
                   First Name <sup>*</sup>
                 </label>
                 <input
@@ -86,7 +86,7 @@ const Signup = () => {
                 />
               </div>
               <div className="flex-col w-1/2">
-                <label className="font-bold" for="lastname">
+                <label className="font-bold" htmlFor="lastname">
                   Last Name <sup>*</sup>
                 </label>
                 <input
@@ -100,7 +100,7 @@ const Signup = () => {
               </div>
             </div>
             <div className="w-full">
-              <label className="font-bold w-full" for="email">
+              <label className="font-bold w-full" htmlFor="email">
                 Email <sup>*</sup>
               </label>
               <input
@@ -113,7 +113,7 @@ const Signup = () => {
               />
             </div>
             <div>
-              <label className="font-bold w-full" for="password">
+              <label className="font-bold w-full" htmlFor="password">
                 Password <sup>*</sup>
               </label>
               <input

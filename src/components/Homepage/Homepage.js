@@ -5,9 +5,20 @@ import SaleBanner from "./SaleBanner";
 import FaqAccordion from "./FaqAccordion";
 import Heading from "../Partials/Heading";
 import Newsletter from "./Newsletter";
-
+import { useEffect } from "react";
 
 const Homepage = () => {
+  useEffect(() => {
+    const scrollToTop = () => {
+      const c = document.documentElement.scrollTop || document.body.scrollTop;
+      if (c > 0) {
+        window.requestAnimationFrame(scrollToTop);
+        window.scrollTo(0, c - c / 8);
+      }
+    };
+
+    scrollToTop();
+  }, []);
   return (
     <div>
       <Banner />
@@ -29,7 +40,6 @@ const Homepage = () => {
         />
         <Newsletter />
       </div>
-
     </div>
   );
 };

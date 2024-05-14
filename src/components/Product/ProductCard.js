@@ -12,7 +12,7 @@ const ProductCard = ({ filter }) => {
   }, [filter]);
 
   const fetchProducts = (filter) => {
-    fetch("http://localhost:3000/category/" + filter)
+    fetch("/category/" + filter)
       .then((res) => res.json())
       .then((result) => {
         setProducts(result);

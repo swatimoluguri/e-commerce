@@ -18,5 +18,7 @@ module.exports={
     getOrderModel: () => dbConnection.collection('orders'),
     getUserModel: () => dbConnection.collection('users'),
     getCustomerEnquiries: () => dbConnection.collection('customer-enquiries'),
-    getNewsletter:()=>dbConnection.collection('newsletters')
+    getNewsletter:()=>dbConnection.collection('newsletters'),
+    getResetPwd:()=>dbConnection.collection('reset-password'),
+    
 };
