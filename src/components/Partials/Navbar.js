@@ -9,9 +9,10 @@ import { faBars, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import SocialMedia from "./SocialMedia";
-import { useSelector,useDispatch } from "react-redux";
-import {clearUser} from "../../utils/UserSlice";
+import { useSelector, useDispatch } from "react-redux";
+import { clearUser } from "../../utils/UserSlice";
 import { useNavigate } from "react-router-dom";
+import { clearCart } from "../../utils/CartSlice";
 
 const Navbar = () => {
   const cart = useSelector((store) => store.cart);
@@ -22,25 +23,37 @@ const Navbar = () => {
   const toggleMenu = () => {
     setMenuOpen(!menuOpen);
   };
-  const handleUserClick=()=>{
-    if (user && user.user && user.user.length > 0) {
+  const handleUserClick = () => {
+    if (user && user?.user && user?.user?.username?.length > 0) {
       dispatch(clearUser());
-    }else{
+      dispatch(clearCart());
+    } else {
       navigate("/signup");
     }
-  }
+  };
   return (
     <div>
       {/* Top Navbar */}
       <div className="bg-app-green h-12 px-4 md:px-8 lg:px-12 xl:px-16 2xl:px-24 flex items-center justify-between text-white">
         <div>Call Us : +91-98765-43210</div>
-        {user.user.length>0?<div>Hi {user.user} !  <Link to="/products"><span className="underline text-app-yellow font-semibold pl-4">Let's shop </span></Link></div>:(<div>
-          Sign Up now and get 25% OFF for your first order.{" "}
-          <span className="text-app-yellow underline font-semibold pl-4">
-            <Link to="/signup">Sign Up Now</Link>
-          </span>
-        </div>)}
-        <SocialMedia/>
+        {user?.user?.username?.length > 0 ? (
+          <div>
+            Hi {user.user.username} !{" "}
+            <Link to="/products">
+              <span className="underline text-app-yellow font-semibold pl-4">
+                Let's shop{" "}
+              </span>
+            </Link>
+          </div>
+        ) : (
+          <div>
+            Sign Up now and get 25% OFF for your first order.{" "}
+            <span className="text-app-yellow underline font-semibold pl-4">
+              <Link to="/signup">Sign Up Now</Link>
+            </span>
+          </div>
+        )}
+        <SocialMedia />
       </div>
 
       {/* Bottom Navbar */}
@@ -68,7 +81,12 @@ const Navbar = () => {
         <div className="flex items-center gap-6 relative">
           <img className="w-6" src={Search} alt="Search" />
           <img className="w-6" src={Heart} alt="Favorites" />
-          <img className="w-6 cursor-pointer" src={user.user.length>0?Logout:User} alt="User Sign In" onClick={handleUserClick} />
+          <img
+            className="w-6 cursor-pointer"
+            src={user?.user?.username?.length > 0 ? Logout : User}
+            alt="User Sign In"
+            onClick={handleUserClick}
+          />
           <Link to="/cart">
             <img className="w-6" src={Cart} alt="Cart" />
           </Link>

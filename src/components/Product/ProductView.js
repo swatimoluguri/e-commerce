@@ -7,12 +7,14 @@ import {
   faHeart,
   faStar as solidStar,
   faStarHalfAlt,
-  faShoppingCart
+  faShoppingCart,
 } from "@fortawesome/free-solid-svg-icons";
 import { faStar as regularStar } from "@fortawesome/free-regular-svg-icons";
 import RelatedProducts from "./RelatedProducts";
 import { useDispatch } from "react-redux";
 import { addItem } from "../../utils/CartSlice";
+import { useSelector } from "react-redux";
+import axios from "axios";
 
 const ProductView = () => {
   const { productId } = useParams();
@@ -20,6 +22,7 @@ const ProductView = () => {
   const [count, setCount] = useState(1);
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(true);
+  const user = useSelector((store) => store.user);
 
   useEffect(() => {
     fetchProduct(productId);
@@ -54,12 +57,17 @@ const ProductView = () => {
     if (count < 5) setCount((prevCount) => prevCount + 1);
   }
 
-  function handleAddToCart() {
+  async function handleAddToCart() {
     let item = Object.fromEntries(
       Object.entries(product).filter(([key]) => key !== "relProds")
     );
     item.count = count;
     dispatch(addItem(item));
+    if (user?.user?.username?.length > 0) {
+      await axios.post("/add-cart", {
+        item,
+      });
+    }
   }
 
   function handleAddToFav() {}
@@ -148,10 +156,11 @@ const ProductView = () => {
                 <div
                   className="flex items-center cursor-pointer hover:bg-app-dark-green rounded-full bg-app-green text-white px-4 py-2"
                   onClick={handleAddToCart}
-                ><FontAwesomeIcon
-                className="text-app-yellow mr-2"
-                icon={faShoppingCart}
-              />
+                >
+                  <FontAwesomeIcon
+                    className="text-app-yellow mr-2"
+                    icon={faShoppingCart}
+                  />
                   Add to Cart
                 </div>
                 <div
@@ -159,9 +168,10 @@ const ProductView = () => {
                   onClick={handleAddToFav}
                 >
                   <FontAwesomeIcon
-                      className="text-app-green mr-2"
-                      icon={faHeart}
-                    /><p>Add to Fav</p>
+                    className="text-app-green mr-2"
+                    icon={faHeart}
+                  />
+                  <p>Add to Fav</p>
                 </div>
               </div>
             </div>

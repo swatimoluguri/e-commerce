@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { addUser } from "../../utils/UserSlice";
 import { useSelector } from "react-redux";
+import { addItem } from "../../utils/CartSlice";
 
 const SignIn = () => {
   const [formData, setFormData] = useState({
@@ -17,6 +18,7 @@ const SignIn = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const user = useSelector((store) => store.user);
+  const cart = useSelector((store) => store.cart);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -31,16 +33,20 @@ const SignIn = () => {
     e.preventDefault();
     await axios
       .post("/sign-in", {
-        formData,
+        formData,cart
       })
       .then((response) => {
-        dispatch(addUser(response.data.username));
+        dispatch(addUser(response.data));
+        response?.data?.cart.forEach((item)=>{
+          dispatch(addItem(item.item));
+        });
         setFormData({
           email: "",
           password: "",
         });
         setError(null);
-        navigate(response.data.redirect);
+
+        navigate('/');
       })
       .catch((error) => {
         if (error.response && error.response.status === 400) {
@@ -53,8 +59,8 @@ const SignIn = () => {
       <div className="flex flex-col items-center bg-[url('assets/bg.jpg')] bg-cover	">
         <Heading text="Sign In" heading="" highlight="" />
       </div>
-      <div className="flex justify-around p-4 items-center">
-        <div className="flex flex-col w-1/3 gap-3">
+      <div className="flex justify-around p-4 ">
+        <div className="flex flex-col w-1/3 gap-3 mt-10">
           <div>
             <h1 className="font-bold text-2xl">Sign In</h1>
           </div>
@@ -106,6 +112,12 @@ const SignIn = () => {
                     Forgot Password?
                   </Link>
                 </p>
+                <p className="font-bold my-4">
+                New here?
+                <Link className="text-app-green hover:underline pl-2" to="/signup">
+                  Create an account
+                </Link>
+              </p>
                 {error && <div className="text-red-500 font-bold">{error}</div>}
               </div>
             </div>

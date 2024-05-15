@@ -8,76 +8,98 @@ import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import DetailsStrip from "../Partials/DetailsStrip";
 import EmptyCart from "../../assets/empty-cart.jpg";
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 
 const Cart = () => {
   const dispatch = useDispatch();
   const [cartTotal, setCartTotal] = useState(0);
   const [cartItems, setCartItems] = useState(0);
   const cart = useSelector((store) => store.cart);
-  useEffect(() => {
-    let total = cart.cart.items.reduce((acc, item) => {
-      acc += Math.round(item.price * 84) * item.count;
-      return acc;
-    }, 0);
-    let totalItems = cart.cart.items.reduce((acc, item) => {
-      acc += item.count;
-      return acc;
-    }, 0);
-    setCartTotal(total);
-    setCartItems(totalItems);
-  }, [cart]);
+  const navigate = useNavigate();
+  const user = useSelector((store) => store.user);
 
-  function handleReduceCount(id) {
+  const cartTotalAmt = useMemo(() => {
+    return cart.cart.items.reduce((acc, item) => {
+      return acc + Math.round(item.price * 84) * item.count;
+    }, 0);
+  }, [cart.cart.items]);
+
+  const cartItemsCount = useMemo(() => {
+    return cart.cart.items.reduce((acc, item) => {
+      return acc + item.count;
+    }, 0);
+  }, [cart.cart.items]);
+
+  useEffect(() => {
+    setCartTotal(cartTotalAmt);
+    setCartItems(cartItemsCount);
+  }, [cartTotalAmt, cartItemsCount]);
+
+  async function handleReduceCount(id) {
     let item = {};
     item.id = id;
     item.updateType = "reduce";
     dispatch(updateItem(item));
+    await axios.post("/reduce-cart", {
+      id,
+    });
   }
 
-  function handleAddCount(id) {
+  async function handleAddCount(id) {
     let item = {};
     item.id = id;
     item.updateType = "add";
     dispatch(updateItem(item));
+    await axios.post("/increase-cart", {
+      id,
+    });
   }
 
-  function handleDelete(id) {
+  async function handleDelete(id) {
     dispatch(deleteItem(id));
+    await axios.post("/delete-cart", {
+      id,
+    });
   }
 
-  function handleClearCart() {
+  async function handleClearCart() {
     dispatch(clearCart());
+    await axios.get("/clear-cart");
   }
 
-  async function handleCheckout(val) {
-    const {data:{id}} = await axios.post("http://localhost:3000/checkout", {
-      val,
+  async function handleCheckout() {
+    const {
+      data: { id },
+    } = await axios.post("/checkout", {
+      cart,amount:cartTotal
     });
 
     var options = {
-      "key": "rzp_test_vorhZ7wKh3AFzX", // Enter the Key ID generated from the Dashboard
-      "amount": "100", // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
-      "currency": "INR",
-      "name": "Swati",
-      "description": "Test",
-      "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQRY7zpT4pHNb8LZfnaP0xI7FYTkiZaYfPUhEaV1scVsQ&s",
-      "order_id":id, //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
-      "callback_url": "http://localhost:3000/checkout/payment-verification",
-      "prefill": {
-          "name": "Gaurav Kumar",
-          "email": "gaurav.kumar@example.com",
-          "contact": "9000090000"
+      key: "rzp_test_vorhZ7wKh3AFzX",
+      amount: cartTotal*100,
+      currency: "INR",
+      name: "Swati",
+      description: "Test",
+      image:
+        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQRY7zpT4pHNb8LZfnaP0xI7FYTkiZaYfPUhEaV1scVsQ&s",
+      order_id: id,
+      callback_url: "/checkout/payment-verification",
+      prefill: {
+        name: "Gaurav Kumar",
+        email: "gaurav.kumar@example.com",
+        contact: "9000090000",
       },
-      "notes": {
-          "address": "Razorpay Corporate Office"
+      notes: {
+        address: "Razorpay Corporate Office",
       },
-      "theme": {
-          "color": "#3399cc"
-      }
-  };
-  var rzp1 = new window.Razorpay(options);
-  rzp1.open();
+      theme: {
+        color: "#3399cc",
+      },
+    };
+
+    var rzp1 = new window.Razorpay(options);
+    rzp1.open();
   }
   return (
     <div>
@@ -196,12 +218,14 @@ const Cart = () => {
             <hr className="my-4" />
             <div className="flex justify-between p-4">
               <div>Total</div>
-              <div>
-                ₹{cartTotal}
-              </div>
+              <div>₹{cartTotal}</div>
             </div>
             <div
-              onClick={() => handleCheckout(cartTotal)}
+              onClick={() =>
+                user?.user?.username?.length > 0
+                  ? handleCheckout()
+                  : navigate("/signin")
+              }
               className="cursor-pointer bg-app-green text-white w-fit px-4 py-2 text-lg font-semibold rounded-full mx-auto my-4"
             >
               Proceed to Checkout

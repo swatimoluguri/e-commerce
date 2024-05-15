@@ -6,7 +6,7 @@ import axios from "axios";
 import bcrypt from "bcryptjs";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import {addUser} from "../../utils/UserSlice";
+import { addUser } from "../../utils/UserSlice";
 import { useSelector } from "react-redux";
 
 const Signup = () => {
@@ -16,12 +16,14 @@ const Signup = () => {
     email: "",
     password: "",
   });
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const user = useSelector((store) => store.user);
+  const cart = useSelector((store) => store.cart);
 
   useEffect(() => {
-    if (user.user.length > 0) navigate("/");
+    if (user?.user?.username?.length > 0) navigate("/");
   }, [user]);
 
   const handleChange = (e) => {
@@ -30,6 +32,7 @@ const Signup = () => {
       ...formData,
       [name]: value,
     });
+    setError(null);
   };
 
   const handleSignUp = async (e) => {
@@ -41,17 +44,26 @@ const Signup = () => {
       email: formData.email,
       password: hashedPassword,
     };
-    const response = await axios.post("/sign-up", {
-      formData: userData,
-    });
-    dispatch(addUser(formData.firstName+' '+formData.lastName));
-    setFormData({
-      firstName: "",
-      lastName: "",
-      email: "",
-      password: "",
-    });
-    navigate(response.data.redirect);
+    await axios
+      .post("/sign-up", {
+        formData: userData,
+        cart,
+      })
+      .then((response) => {
+        dispatch(addUser(response.data));
+        setFormData({
+          firstName: "",
+          lastName: "",
+          email: "",
+          password: "",
+        });
+        navigate("/");
+      })
+      .catch((error) => {
+        if (error.response && error.response.status === 400) {
+          setError(error.response.data.message);
+        }
+      });
   };
 
   return (
@@ -144,10 +156,14 @@ const Signup = () => {
               <p>Google Sign Up</p> */}
               <p className="font-bold my-4">
                 Already have an account?{" "}
-                <Link className="text-app-green hover:underline " to="/signin">
+                <Link
+                  className="text-app-green hover:underline text-xl pl-4"
+                  to="/signin"
+                >
                   Sign In
                 </Link>
               </p>
+              {error && <div className="text-red-500 font-bold">{error}</div>}
             </div>
           </form>
         </div>

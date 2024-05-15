@@ -2,6 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const morgan = require("morgan");
 const { ObjectId } = require("mongodb");
+const cookieParser = require("cookie-parser");
 const {
   connectToDb,
   getDb,
@@ -21,18 +22,30 @@ const { now } = require("mongoose");
 
 const app = express();
 const client = new OAuth2Client();
+
+require("dotenv").config();
+const { MAILERSEND_APIKEY, JWT_SECRET, RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET } =
+  process.env;
+
 const razorpay = new Razorpay({
-  key_id: "rzp_test_vorhZ7wKh3AFzX",
-  key_secret: "mk80OiNmNFnZIwmKYweWqdMj",
+  key_id: RAZORPAY_KEY_ID,
+  key_secret: RAZORPAY_KEY_SECRET,
 });
 
 const mailerSend = new MailerSend({
-  apiKey:
-    "mlsn.0fb548184c937abdfdba710dd5599c559941130baf7447f5a08ea10b80253290",
+  apiKey: MAILERSEND_APIKEY,
 });
 
-const generateSecretKey = () => {
-  return crypto.randomBytes(32).toString("hex");
+const verifyToken = (req, res, next) => {
+  const token = req.cookies.token;
+  if (!token) return res.status(403).json({ message: "No token provided" });
+
+  jwt.verify(token, JWT_SECRET, (err, decoded) => {
+    if (err)
+      return res.status(500).json({ message: "Failed to authenticate token" });
+    req.userId = decoded.userId;
+    next();
+  });
 };
 
 function generateOTP() {
@@ -46,6 +59,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cors());
 app.use(morgan("dev"));
+app.use(cookieParser());
 
 //connections
 let db;
@@ -86,14 +100,13 @@ app.get("/faqs", (req, res) => {
     });
 });
 
-app.get("/category/:id", (req, res) => {
+app.get("/category/:id", async (req, res) => {
   const category = req.params.id;
   db.collection("categories")
-    .find({ name: category })
-    .toArray()
+    .findOne({ name: category })
     .then((result) => {
-      if (result.length > 0) {
-        const response = result[0].title;
+      if (result) {
+        const response = result.title;
         if (!["all", "high"].includes(response)) {
           return db
             .collection("products")
@@ -147,11 +160,11 @@ app.get("/products/:id", (req, res) => {
     });
 });
 
-app.post("/checkout", async (req, res) => {
+app.post("/checkout", verifyToken, async (req, res) => {
   try {
-    const amount = req.body.val;
+    const amount = req.body.amount;
     var options = {
-      amount: 100,
+      amount: amount * 100,
       currency: "INR",
     };
     const order = await razorpay.orders.create(options);
@@ -159,6 +172,8 @@ app.post("/checkout", async (req, res) => {
     await orderModel.insertOne({
       order_id: order.id,
       amount: amount,
+      userId: req.userId,
+      items: req.body.cart.cart.items,
     });
     res.json(order);
   } catch (error) {
@@ -172,13 +187,13 @@ app.post("/checkout/payment-verification", async (req, res) => {
     req.body;
   const body_data = razorpay_order_id + "|" + razorpay_payment_id;
   const response = crypto
-    .createHmac("sha256", "mk80OiNmNFnZIwmKYweWqdMj")
+    .createHmac("sha256", RAZORPAY_KEY_SECRET)
     .update(body_data)
     .digest("hex");
   const isValid = response === razorpay_signature;
   if (isValid) {
     const orderModel = getOrderModel();
-    await orderModel.findOne(
+    await orderModel.findOneAndUpdate(
       {
         order_id: razorpay_order_id,
       },
@@ -189,11 +204,25 @@ app.post("/checkout/payment-verification", async (req, res) => {
         },
       }
     );
+    await db.collection("cart").deleteMany({ userId: req.userId });
     res.redirect(`/success?payment_id=${razorpay_payment_id}`);
   } else {
     res.redirect("/failed");
   }
   return;
+});
+
+app.post("/order-details", async (req, res) => {
+  const orderModel = getOrderModel();
+  await orderModel
+    .findOne({ razorpay_payment_id: req.body.paymentId })
+    .then((result) => {
+      res.status(200).json({ result });
+    })
+    .catch((error) => {
+      console.error(error);
+      res.status(500).json({ message: "Server error" });
+    });
 });
 
 app.post("/google-auth", async (req, res) => {
@@ -212,15 +241,41 @@ app.post("/google-auth", async (req, res) => {
 });
 
 app.post("/sign-up", async (req, res) => {
+  const { firstName, lastName, email } = req.body.formData;
   const userModel = getUserModel();
-  const newUser = await userModel
-    .insertOne(req.body.formData)
-    .then(() => {
-      res.status(200).json({ redirect: "/" });
-    })
-    .catch((err) => {
-      console.log(err);
+  const alreadyExisting = await userModel.findOne({ email: email });
+  let user;
+  if (alreadyExisting) {
+    return res.status(400).json({
+      message: "User already registered for entered email. Please Sign in",
     });
+  } else {
+    await userModel
+      .insertOne(req.body.formData)
+      .then((result) => {
+        user = result.insertedId;
+        const token = jwt.sign({ userId: user }, JWT_SECRET, {
+          expiresIn: "7d",
+        });
+
+        res.cookie("token", token, {
+          httpOnly: true,
+          sameSite: "strict",
+          maxAge: 3600000,
+        });
+
+        req.body.cart.cart.items.forEach(async (item) => {
+          await db
+            .collection("cart")
+            .insertOne({ userId: user.toString(), item: item });
+        });
+        const username = firstName + " " + lastName;
+        res.status(200).json({ username });
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }
 });
 
 app.post("/sign-in", async (req, res) => {
@@ -237,12 +292,27 @@ app.post("/sign-in", async (req, res) => {
     if (!passwordMatch) {
       return res.status(400).json({ message: "Invalid Password" });
     }
-    const secretKey = generateSecretKey();
-    const token = jwt.sign({ userId: user._id }, secretKey, {
-      expiresIn: "1h",
+    const token = jwt.sign({ userId: user._id }, JWT_SECRET, {
+      expiresIn: "7d",
     });
+
+    res.cookie("token", token, {
+      httpOnly: true,
+      sameSite: "strict",
+      maxAge: 3600000,
+    });
+    req.body.cart.cart.items.forEach(async (item) => {
+      await db
+        .collection("cart")
+        .insertOne({ userId: user._id.toString(), item: item });
+    });
+
     const username = user.firstName + " " + user.lastName;
-    res.status(200).json({ redirect: "/", token, username });
+    const cart = await db
+      .collection("cart")
+      .find({ userId: user._id.toString() })
+      .toArray();
+    res.status(200).json({ username, cart });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Server error" });
@@ -372,16 +442,81 @@ app.post("/change-password", async (req, res) => {
       return res
         .status(400)
         .json({ message: "No user found for entered email" });
-    }else{
-      await userModel.findOneAndUpdate(
-        { email: email },
-        { $set: { password: newPassword } }
-      ).then(()=>{
-        res.status(200).json({ redirect: "/signin" });
-      });
+    } else {
+      await userModel
+        .findOneAndUpdate({ email: email }, { $set: { password: newPassword } })
+        .then(() => {
+          res.status(200).json({ redirect: "/signin" });
+        });
     }
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Server error" });
   }
+});
+
+app.post("/add-cart", verifyToken, async (req, res) => {
+  try {
+    const newItem = req.body.item;
+    const existingItem = await db
+      .collection("cart")
+      .findOne({ userId: req.userId, "item.id": newItem.id });
+
+    if (existingItem) {
+      const maxCount = 5;
+      const combinedCount = existingItem.item.count + newItem.count;
+      const newCount = combinedCount <= maxCount ? combinedCount : maxCount;
+
+      await db
+        .collection("cart")
+        .findOneAndUpdate(
+          { userId: req.userId, "item.id": newItem.id },
+          { $set: { "item.count": newCount } }
+        );
+
+      res.status(200).json({ message: "Item count updated" });
+    } else {
+      await db.collection("cart").insertOne({
+        userId: req.userId,
+        item: req.body.item,
+      });
+
+      res.status(200).json({ message: "Item added to cart" });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+app.post("/reduce-cart", verifyToken, async (req, res) => {
+  await db
+    .collection("cart")
+    .findOneAndUpdate(
+      { userId: req.userId, "item.id": req.body.id },
+      { $inc: { "item.count": -1 } }
+    );
+  res.sendStatus(200);
+});
+
+app.post("/increase-cart", verifyToken, async (req, res) => {
+  await db
+    .collection("cart")
+    .findOneAndUpdate(
+      { userId: req.userId, "item.id": req.body.id },
+      { $inc: { "item.count": 1 } }
+    );
+  res.sendStatus(200);
+});
+
+app.post("/delete-cart", verifyToken, async (req, res) => {
+  await db
+    .collection("cart")
+    .findOneAndDelete({ userId: req.userId, "item.id": req.body.id });
+  res.sendStatus(200);
+});
+
+app.post("/clear-cart", verifyToken, async (req, res) => {
+  await db.collection("cart").deleteMany({ userId: req.userId });
+  res.sendStatus(200);
 });
