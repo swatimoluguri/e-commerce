@@ -16,12 +16,12 @@ const Collections = () => {
     setActive(e);
   };
   return (
-    <div className="flex flex-col items-center">
-      <div className="flex gap-8 mb-10">
+    <div className="flex flex-col items-center ">
+      <div className="flex flex-wrap gap-4 md:gap-8 mb-6 md:mb-10 justify-center mx-10">
         {list.map((val) => (
           <div
             key={val}
-            className={`cursor-pointer px-4 py-2 border-gray-400 border rounded-full ${
+            className={`cursor-pointer px-2 py-1 md:px-4 md:py-2 border-gray-400 border rounded-full ${
               active === val &&
               "bg-app-green text-white border-none border-app-green"
             }`}

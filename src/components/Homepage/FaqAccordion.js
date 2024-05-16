@@ -22,11 +22,11 @@ const FaqAccordion = () => {
     setVisibleAnswerId((prevId) => (prevId === id ? null : id));
   };
   return (
-    <div className="flex flex-col w-1/2 mx-auto gap-6">
+    <div className="flex flex-col w-5/6 md:w-1/2 mx-auto gap-2 md:gap-6">
       {faqs.map((item) => (
         <div key={item._id}>
           <div
-            className={`border border-gray-400 p-4 rounded-xl font-semibold cursor-pointer flex justify-between ${
+            className={`border border-gray-200 p-4 rounded-xl font-semibold cursor-pointer flex justify-between ${
               visibleAnswerId === item._id ? "bg-app-green text-white" : ""
             }`}
             id={"ques_" + item._id}
@@ -35,7 +35,7 @@ const FaqAccordion = () => {
             <div className="flex flex-col">
               <div>{item.question}</div>
               <div
-                className={`overflow-hidden font-normal text-sm ${
+                className={`text-justify overflow-hidden font-normal text-sm ${
                   visibleAnswerId === item._id
                     ? "py-4 rounded-xl transition-all duration-300 max-h-128"
                     : "max-h-0 duration-200"

@@ -49,35 +49,35 @@ const SaleBanner = () => {
 
   return (
     <div className="flex w-5/6 mx-auto gap-4 my-10">
-      <div className="flex flex-col items-center bg-[url('assets/bg.jpg')] py-12 rounded-xl w-1/2 bg-cover	">
-        <h1 className="font-bold text-5xl">
+      <div className="flex flex-col items-center bg-[url('assets/bg.jpg')] py-12 rounded-xl w-full lg:w-1/2 bg-cover	">
+        <h1 className="font-bold text-4xl md:text-5xl">
           Flash <span className="text-app-green">Sale!</span>
         </h1>
-        <h2 className="py-4 text-2xl">Get 20% off - Limited Time Offer!</h2>
+        <h2 className="py-4 text-xl md:text-2xl">Get 20% off - Limited Time Offer!</h2>
         <div className="flex items-center gap-5 mb-10">
           <div className="flex items-center flex-col">
-            <p className="font-bold text-5xl" ref={dayRef}>
+            <p className="font-bold text-3xl md:text-5xl" ref={dayRef}>
               {day}
             </p>
             <p className="text-gray-500">Days</p>
           </div>
-          <p className="font-bold text-5xl">:</p>
+          <p className="font-bold text-3xl md:text-5xl">:</p>
           <div className="flex items-center flex-col">
-            <p className="font-bold text-5xl" ref={hourRef}>
+            <p className="font-bold text-3xl md:text-5xl" ref={hourRef}>
               {hour}
             </p>
             <p className="text-gray-500">Hours</p>
           </div>
-          <p className="font-bold text-5xl">:</p>
+          <p className="font-bold text-3xl md:text-5xl">:</p>
           <div className="flex items-center flex-col">
-            <p className="font-bold text-5xl" ref={minutesRef}>
+            <p className="font-bold text-3xl md:text-5xl" ref={minutesRef}>
               {minute}
             </p>
             <p className="text-gray-500">Minutes</p>
           </div>
-          <p className="font-bold text-5xl">:</p>
+          <p className="font-bold text-3xl md:text-5xl">:</p>
           <div className="flex items-center flex-col">
-            <p className="font-bold text-5xl" ref={secondsRef}>
+            <p className="font-bold text-3xl md:text-5xl" ref={secondsRef}>
               {second}
             </p>
             <p className="text-gray-500">Seconds</p>
@@ -89,7 +89,7 @@ const SaleBanner = () => {
           </button>
         </Link>
       </div>
-      <div className="bg-[url('assets/package.jpg')] py-12 rounded-xl w-1/2 bg-cover"></div>
+      <div className="lg:block hidden bg-[url('assets/package.jpg')] py-12 rounded-xl w-1/2 bg-cover"></div>
     </div>
   );
 };

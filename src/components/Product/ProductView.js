@@ -70,7 +70,7 @@ const ProductView = () => {
     }
   }
 
-  function handleAddToFav() {}
+  // function handleAddToFav() {}
 
   return (
     <div>
@@ -163,7 +163,7 @@ const ProductView = () => {
                   />
                   Add to Cart
                 </div>
-                <div
+                {/* <div
                   className="flex items-center cursor-pointer hover:bg-app-dark-yellow bg-app-yellow text-black rounded-full  px-4 py-2"
                   onClick={handleAddToFav}
                 >
@@ -172,7 +172,7 @@ const ProductView = () => {
                     icon={faHeart}
                   />
                   <p>Add to Fav</p>
-                </div>
+                </div> */}
               </div>
             </div>
           </div>

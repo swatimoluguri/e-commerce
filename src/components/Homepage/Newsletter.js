@@ -38,7 +38,7 @@ const Newsletter = () => {
 
   return (
     <div className="flex flex-col items-center gap-10 mb-12">
-      <p className="text-gray-500 text-lg">
+      <p className="text-gray-500 text-md md:text-lg mx-10">
         Get 20% off on your first order just by subscribing to our newsletter.
       </p>
       {isSubscribed ? (
@@ -48,11 +48,11 @@ const Newsletter = () => {
         </h1>
       ) : (
         <form onSubmit={handleNewsletter}>
-          <div className="flex gap-10">
+          <div className="flex gap-10 md:flex-row flex-col">
             <div
               className={`flex items-center rounded-full border ${
                 isValidEmail ? "border-green-500" : "border-red-500"
-              } text-gray-500 pl-2 bg-white`}
+              } text-gray-500 pl-2 bg-white py-2`}
             >
               <div className="bg-app-green rounded-full py-2 px-4">
                 <FontAwesomeIcon

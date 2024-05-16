@@ -16,6 +16,13 @@ const Signup = () => {
     email: "",
     password: "",
   });
+  const constraints = [
+    "8 Digits",
+    "Uppercase Alphabet",
+    "Lowercase Alphabet",
+    "Special Character",
+    "Number",
+  ];
   const [error, setError] = useState(null);
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -35,8 +42,37 @@ const Signup = () => {
     setError(null);
   };
 
+  const isConstraintSatisfied = (constraint) => {
+    switch (constraint) {
+      case "8 Digits":
+        return formData.password.length >= 8;
+      case "Uppercase Alphabet":
+        return /[A-Z]/.test(formData.password);
+      case "Lowercase Alphabet":
+        return /[a-z]/.test(formData.password);
+      case "Special Character":
+        return /[!@#$%^&*(),.?":{}|<>]/.test(formData.password);
+      case "Number":
+        return /\d/.test(formData.password);
+      default:
+        return false;
+    }
+  };
+
   const handleSignUp = async (e) => {
     e.preventDefault();
+    for (let i = 0; i < constraints.length; i++) {
+      if (!isConstraintSatisfied(constraints[i])) {
+        setError("Password should contain " + constraints[i]);
+        return;
+      }
+    }
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    if (!emailRegex.test(formData.email)) {
+      setError("Please enter valid Email Address");
+      return;
+    }
+
     const hashedPassword = await bcrypt.hash(formData.password, 10);
     const userData = {
       firstName: formData.firstName,
@@ -95,6 +131,7 @@ const Signup = () => {
                   onChange={handleChange}
                   value={formData.firstName}
                   name="firstName"
+                  required
                 />
               </div>
               <div className="flex-col w-1/2">
@@ -108,6 +145,7 @@ const Signup = () => {
                   onChange={handleChange}
                   value={formData.lastName}
                   name="lastName"
+                  required
                 />
               </div>
             </div>
@@ -122,6 +160,7 @@ const Signup = () => {
                 onChange={handleChange}
                 value={formData.email}
                 name="email"
+                required
               />
             </div>
             <div>
@@ -135,13 +174,22 @@ const Signup = () => {
                 onChange={handleChange}
                 value={formData.password}
                 name="password"
+                required
               />
             </div>
-            <div>
-              <input type="checkbox" />
-              <span className="ml-4 font-bold">
-                I agree with Terms & Conditions and Privacy Policy
-              </span>
+            <div className="text-sm flex flex-wrap gap-5 justify-between my-6">
+              {constraints.map((item, index) => (
+                <div
+                  key={index}
+                  className={
+                    isConstraintSatisfied(item)
+                      ? "text-green-500"
+                      : "text-red-500"
+                  }
+                >
+                  {item}
+                </div>
+              ))}
             </div>
             <div>
               <button
@@ -150,7 +198,7 @@ const Signup = () => {
               >
                 Sign Up
               </button>
-
+              {error && <div className="text-red-500 font-bold">{error}</div>}
               <hr />
               {/* <p className="my-4 text-gray-500">Sign Up with</p>
               <p>Google Sign Up</p> */}
@@ -163,7 +211,6 @@ const Signup = () => {
                   Sign In
                 </Link>
               </p>
-              {error && <div className="text-red-500 font-bold">{error}</div>}
             </div>
           </form>
         </div>

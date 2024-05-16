@@ -25,6 +25,15 @@ module.exports = {
       transitionTimingFunction: {
         DEFAULT: "ease-in-out",
       },
+      keyframes: {
+        growShrink: {
+          "0%, 100%": { transform: "scale(1)" },
+          "50%": { transform: "scale(1.5)" },
+        },
+      },
+      animation: {
+        growShrink: "growShrink 0.5s ease-in-out",
+      },
     },
   },
   plugins: [],

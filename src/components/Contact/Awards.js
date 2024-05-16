@@ -58,41 +58,41 @@ const Awards = () => {
   return (
     <div
       ref={awardsRef}
-      className="flex justify-around bg-app-yellow py-8 my-8"
+      className="flex flex-col gap-10 md:flex-row justify-around bg-app-yellow py-8 my-8"
     >
-      <div className="flex justify-center items-center gap-4">
-        <div className="text-6xl">
+      <div className="w-1/4 md:w-full mx-auto flex justify-between md:justify-center items-center gap-4">
+        <div className="text-5xl md:text-6xl">
           <FontAwesomeIcon className="text-app-green" icon={faCalendar} />
         </div>
         <div className="flex flex-col text-center">
-          <p className="text-4xl font-bold">{Math.round(currentYears)}+</p>
+          <p className="text-3xl md:text-4xl font-bold">{Math.round(currentYears)}+</p>
           <p>Years</p>
         </div>
       </div>
-      <div className="flex justify-center items-center gap-4">
-        <div className="text-6xl">
+      <div className="w-1/4 md:w-full mx-auto flex justify-between md:justify-center items-center gap-4">
+        <div className="text-5xl md:text-6xl">
           <FontAwesomeIcon className="text-app-green" icon={faUser} />
         </div>
         <div className="flex flex-col text-center">
-          <p className="text-4xl font-bold">{Math.round(currentCustomer)}M+</p>
+          <p className="text-3xl md:text-4xl font-bold">{Math.round(currentCustomer)}M+</p>
           <p>Happy Customers</p>
         </div>
       </div>
-      <div className="flex justify-center items-center gap-4">
-        <div className="text-6xl">
+      <div className="w-1/4 md:w-full mx-auto flex justify-between md:justify-center items-center gap-4">
+        <div className="text-5xl md:text-6xl">
           <FontAwesomeIcon className="text-app-green" icon={faHome} />
         </div>
         <div className="flex flex-col text-center">
-          <p className="text-4xl font-bold">{Math.round(currentStores)}+</p>
+          <p className="text-3xl md:text-4xl font-bold">{Math.round(currentStores)}+</p>
           <p>Stores</p>
         </div>
       </div>
-      <div className="flex justify-center items-center gap-4">
-        <div className="text-6xl">
+      <div className="w-1/4 md:w-full mx-auto flex justify-between md:justify-center items-center gap-4">
+        <div className="text-5xl md:text-6xl">
           <FontAwesomeIcon className="text-app-green" icon={faTrophy} />
         </div>
         <div className="flex flex-col text-center">
-          <p className="text-4xl font-bold">{Math.round(currentAwards)}+</p>
+          <p className="text-3xl md:text-4xl font-bold">{Math.round(currentAwards)}+</p>
           <p>Awards</p>
         </div>
       </div>

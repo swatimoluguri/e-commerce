@@ -41,9 +41,10 @@ const Cart = () => {
     item.id = id;
     item.updateType = "reduce";
     dispatch(updateItem(item));
-    await axios.post("/reduce-cart", {
-      id,
-    });
+    if (user?.user?.username?.length > 0)
+      await axios.post("/reduce-cart", {
+        id,
+      });
   }
 
   async function handleAddCount(id) {
@@ -51,33 +52,36 @@ const Cart = () => {
     item.id = id;
     item.updateType = "add";
     dispatch(updateItem(item));
-    await axios.post("/increase-cart", {
-      id,
-    });
+    if (user?.user?.username?.length > 0)
+      await axios.post("/increase-cart", {
+        id,
+      });
   }
 
   async function handleDelete(id) {
     dispatch(deleteItem(id));
-    await axios.post("/delete-cart", {
-      id,
-    });
+    if (user?.user?.username?.length > 0)
+      await axios.post("/delete-cart", {
+        id,
+      });
   }
 
   async function handleClearCart() {
     dispatch(clearCart());
-    await axios.get("/clear-cart");
+    if (user?.user?.username?.length > 0) await axios.get("/clear-cart");
   }
 
   async function handleCheckout() {
     const {
       data: { id },
     } = await axios.post("/checkout", {
-      cart,amount:cartTotal
+      cart,
+      amount: cartTotal,
     });
 
     var options = {
       key: "rzp_test_vorhZ7wKh3AFzX",
-      amount: cartTotal*100,
+      amount: cartTotal * 100,
       currency: "INR",
       name: "Swati",
       description: "Test",
@@ -176,6 +180,7 @@ const Cart = () => {
                 ))}
               </tbody>
             </table>
+            <div className="text-red-500 text-right mt-4 text-sm">Max Quantity for each product is 5</div>
             <div className="flex items-center justify-between mt-10">
               <div>
                 <Link to="/products">

@@ -201,6 +201,7 @@ app.post("/checkout/payment-verification", async (req, res) => {
         $set: {
           razorpay_payment_id: razorpay_payment_id,
           razorpay_signature: razorpay_signature,
+          order_date: now(),
         },
       }
     );
@@ -519,4 +520,29 @@ app.post("/delete-cart", verifyToken, async (req, res) => {
 app.post("/clear-cart", verifyToken, async (req, res) => {
   await db.collection("cart").deleteMany({ userId: req.userId });
   res.sendStatus(200);
+});
+
+app.get("/account-details", verifyToken, async (req, res) => {
+  const userId = new ObjectId(req.userId);
+  let user = {};
+
+  try {
+    const userResponse = await db.collection("users").findOne({ _id: userId });
+    if (!userResponse) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    user.name = userResponse.firstName + " " + userResponse.lastName;
+    user.email = userResponse.email;
+
+    const orders = await db
+      .collection("orders")
+      .find({ userId: userId.toString(),razorpay_payment_id:{ $ne: null } })
+      .toArray();
+    user.orders = orders;
+
+    res.status(200).json(user);
+  } catch (error) {
+    res.status(500).json({ message: "Internal Server Error" });
+  }
 });

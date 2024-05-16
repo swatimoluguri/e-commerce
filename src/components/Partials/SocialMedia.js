@@ -5,9 +5,9 @@ import Pinterest from "../../assets/pinterest.png";
 import Youtube from "../../assets/youtube.png";
 import { Link } from "react-router-dom";
 
-const SocialMedia = () => {
+const SocialMedia = ({ props }) => {
   return (
-    <div className="flex gap-2">
+    <div className={`flex  gap-2 ${props}`}>
       <Link to="https://www.facebook.com/" target="_blank">
         <img className="w-6" src={Facebook} alt="Facebook" />
       </Link>

@@ -31,6 +31,11 @@ const SignIn = () => {
 
   const handleSignUp = async (e) => {
     e.preventDefault();
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    if (!emailRegex.test(formData.email)) {
+      setError("Please enter valid Email Address");
+      return;
+    }
     await axios
       .post("/sign-in", {
         formData,cart
@@ -102,6 +107,7 @@ const SignIn = () => {
               >
                 Sign In
               </button>
+              {error && <div className="text-red-500 font-bold">{error}</div>}
               <hr />
               <div className="flex justify-between items-center">
                 <p className="font-bold my-4">
@@ -118,7 +124,7 @@ const SignIn = () => {
                   Create an account
                 </Link>
               </p>
-                {error && <div className="text-red-500 font-bold">{error}</div>}
+                
               </div>
             </div>
           </form>

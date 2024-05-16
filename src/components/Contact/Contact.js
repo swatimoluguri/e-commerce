@@ -42,15 +42,15 @@ const Contact = () => {
       <div className="flex flex-col items-center bg-[url('assets/bg.jpg')] bg-cover	">
         <Heading text="Contact Us" heading="" highlight="" />
       </div>
-      <div className="flex justify-around p-4 ">
+      <div className="flex flex-col md:flex-row justify-around p-4 ">
         {enquiry ? (
-          <div className="flex justify-center items-center text-center w-1/3 gap-3">
+          <div className="flex justify-center items-center text-center w-5/6 md:w-1/3 mx-auto md:mx-0 gap-3">
             <div>
               <h1 className="font-bold text-xl">Thanks for reaching out to us, our executives will contact you soon. <br/>Your enquiry ID is <span className="text-app-green">#{enquiry}</span></h1>
             </div>
           </div>
         ) : (
-          <div className="flex flex-col w-1/3 gap-3">
+          <div className="flex flex-col w-5/6 md:w-1/3 mx-auto md:mx-0 gap-3">
             <div>
               <h1 className="font-bold text-2xl">Get in Touch</h1>
             </div>
@@ -128,7 +128,7 @@ const Contact = () => {
           </div>
         )}
 
-        <div className="w-1/3 bg-app-green text-white rounded-xl flex flex-col  p-10 gap-8">
+        <div className="w-5/6 md:w-1/3 mx-auto md:mx-0 bg-app-green text-white rounded-xl flex flex-col  p-10 gap-8">
           <div>
             <h1 className="text-3xl font-bold mb-2">Address</h1>
             <p className="text-gray-300">
@@ -158,6 +158,7 @@ const Contact = () => {
           </div>
         </div>
       </div>
+      <div className="flex justify-center">
       <iframe
         src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d669.0547157050926!2d79.12829866533423!3d18.44988308890282!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bccd8decd62d78f%3A0xfaaf8ec24fa783d6!2sSVJC%20Girls%20Jr.%20College!5e0!3m2!1sen!2sin!4v1715335905158!5m2!1sen!2sin"
         width="1920"
@@ -166,6 +167,7 @@ const Contact = () => {
         loading="lazy"
         referrerpolicy="no-referrer-when-downgrade"
       ></iframe>
+      </div>
       <DetailsStrip />
     </div>
   );

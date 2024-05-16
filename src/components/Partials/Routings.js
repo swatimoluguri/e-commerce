@@ -10,6 +10,7 @@ import Success from "../Checkout/Success";
 import Contact from "../Contact/Contact";
 import About from "../Contact/About";
 import ForgotPassword from "../User/ForgotPassword";
+import UserAccount from "../User/UserAccount";
 
 const Routings = () => {
   return (
@@ -25,6 +26,7 @@ const Routings = () => {
       <Route path="/contact" element={<Contact />} />
       <Route path="/about" element={<About />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
+      <Route path="/myAccount" element={<UserAccount />} />
     </Routes>
   );
 };

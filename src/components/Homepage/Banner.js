@@ -44,9 +44,9 @@ const Banner = () => {
   };
   return (
     <div className="relative h-screen/2 flex items-center justify-center">
-      <div className="h-full z-10 absolute flex items-center w-3/4 justify-center gap-24">
-        <div className="w-1/2 flex flex-col gap-8">
-          <div className="relative h-14 w-fit flex items-center bg-white rounded-3xl px-4 py-1 text-2xl font-medium">
+      <div className="h-full z-10 absolute flex items-center w-7/8 lg:w-5/6 justify-center lg:gap-24">
+        <div className="w-5/6 lg:w-1/2 flex flex-col gap-6 lg:gap-8">
+          <div className="relative h-14 w-fit flex items-center bg-white rounded-3xl px-4 py-1 text-lg lg:text-2xl font-medium">
             <img
               src={Bag}
               className="h-full object-cover inline"
@@ -60,11 +60,11 @@ const Banner = () => {
             />
           </div>
 
-          <p className="text-6xl font-bold text-gray-800 leading-normal">
+          <p className="text-3xl md:text-4xl xl:text-6xl font-bold text-gray-800 leading-normal">
             Shoppy <span className="text-app-green">Early Bird Sale</span> is
             LIVE !
           </p>
-          <p className="text-gray-500 font-medium text-lg   ">
+          <p className="text-gray-500 w-full font-medium text-sm lg:text-lg   ">
             Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
             eiusmod tempor incididunt ut labore et dolore magna aliqua.
           </p>
@@ -76,17 +76,17 @@ const Banner = () => {
             </Link>
           </div>
         </div>
-        <div className="w-1/2 flex flex-col">
+        <div className="hidden mt-4 lg:mt-10 lg:flex flex-col">
           {cards[currentIndex]}
-          <div className="py-6 flex gap-4">
-          <button className="h-12 w-12 rounded-3xl bg-app-green" onClick={prevSlide}><FontAwesomeIcon className="text-white" icon={faArrowLeft} /></button>
+          <div className="py-2 lg:py-6 flex gap-4">
+          <button className="h-8 w-8 lg:h-12 lg:w-12 rounded-3xl bg-app-green" onClick={prevSlide}><FontAwesomeIcon className="text-white" icon={faArrowLeft} /></button>
           <button className="h-12 w-12 rounded-3xl bg-app-yellow" onClick={nextSlide}><FontAwesomeIcon className="text-black" icon={faArrowRight} /></button>
           </div>
         </div>
       </div>
 
       <img
-        className=" z-0 relative object-cover w-full"
+        className="z-0 relative object-cover h-96 lg:h-auto lg:w-full"
         src={Bg}
         alt="background"
       />

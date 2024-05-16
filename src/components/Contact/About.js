@@ -25,7 +25,7 @@ const About = () => {
   ];
   return (
     <div>
-      <div className="flex flex-col items-center  bg-[url('assets/bg.jpg')] bg-cover	">
+      <div className="flex flex-col items-center bg-[url('assets/bg.jpg')] bg-cover	">
         <Heading
           text="Our Story"
           heading="Crafted Comfort:"
@@ -33,7 +33,7 @@ const About = () => {
         />
       </div>
       <div className="w-2/3  mx-auto">
-        <p className="text-gray-500 font-medium text-lg text-justify py-4 my-4  ">
+        <p className="text-gray-500 font-medium text-md md:text-lg text-justify py-4 my-4  ">
           Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
           eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad
           minim veniam, quis nostrud exercitation ullamco laboris nisi ut
@@ -48,14 +48,14 @@ const About = () => {
           Jenny Alexander
         </h1>
         <p>CEO</p>
-        <img src={Jenny} alt="CEO Jenny" className="h-112 mx-auto rounded-xl" />
+        <img src={Jenny} alt="CEO Jenny" className="h-80 lg:h-112 mx-auto rounded-xl" />
       </div>
       <Awards />
       <Heading text="Our team" heading="Meet:" highlight="Our Team" />
-      <div className="flex justify-around">
+      <div className="flex gap-4 flex-wrap justify-around">
         {cards.map((item) => (
           <div className="bg-gray-50 rounded-lg p-4">
-            <div className="h-96 w-96">
+            <div className="h-60 w-60 lg:h-96 lg:w-96">
               <img
                 className="h-full w-full object-cover rounded-lg"
                 src={item.img}
@@ -70,7 +70,7 @@ const About = () => {
         ))}
       </div>
       <div className="flex flex-col items-center  bg-[url('assets/bg.jpg')] bg-cover	my-10">
-        <p className="text-gray-500 font-medium text-lg text-justify py-4  w-2/3 mx-auto ">
+        <p className="text-gray-500 font-medium text-md md:text-lg text-justify py-4  w-2/3 mx-auto ">
           Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
           eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad
           minim veniam, quis nostrud exercitation ullamco laboris nisi ut
