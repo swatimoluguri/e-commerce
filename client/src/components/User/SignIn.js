@@ -19,6 +19,7 @@ const SignIn = () => {
   const dispatch = useDispatch();
   const user = useSelector((store) => store.user);
   const cart = useSelector((store) => store.cart);
+  const apiUrl = process.env.REACT_APP_API_URL || "";
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -37,7 +38,7 @@ const SignIn = () => {
       return;
     }
     await axios
-      .post("/server/sign-in", {
+      .post(`${apiUrl}/sign-in`, {
         formData,
         cart,
       })

@@ -23,6 +23,7 @@ const ProductView = () => {
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(true);
   const user = useSelector((store) => store.user);
+  const apiUrl = process.env.REACT_APP_API_URL || "";
 
   useEffect(() => {
     fetchProduct(productId);
@@ -40,7 +41,8 @@ const ProductView = () => {
   }, [productId]);
 
   const fetchProduct = (productId) => {
-    fetch("/server/products/" + productId)
+    const apiUrl = process.env.REACT_APP_API_URL || "";
+    fetch(`${apiUrl}/products/${productId}`)
       .then((res) => res.json())
       .then((result) => {
         setProduct(result);
@@ -64,9 +66,13 @@ const ProductView = () => {
     item.count = count;
     dispatch(addItem(item));
     if (user?.user?.username?.length > 0) {
-      await axios.post("/server/add-cart", {
-        item,
-      });
+      const token=user.user.token;
+      await axios.post(
+        `${apiUrl}/add-cart`,
+        {
+          item,token
+        }
+      );
     }
   }
 

@@ -54,7 +54,7 @@ const About = () => {
       <Heading text="Our team" heading="Meet:" highlight="Our Team" />
       <div className="flex gap-4 flex-wrap justify-around">
         {cards.map((item) => (
-          <div className="bg-gray-50 rounded-lg p-4">
+          <div key={item.name} className="bg-gray-50 rounded-lg p-4">
             <div className="h-60 w-60 lg:h-96 lg:w-96">
               <img
                 className="h-full w-full object-cover rounded-lg"

@@ -5,12 +5,13 @@ import { faPlus, faMinus } from "@fortawesome/free-solid-svg-icons";
 const FaqAccordion = () => {
   const [faqs, setFaqs] = useState([]);
   const [visibleAnswerId, setVisibleAnswerId] = useState(null);
+  const apiUrl = process.env.REACT_APP_API_URL || "";
 
   useEffect(() => {
     fetchFaqs();
   }, []);
   const fetchFaqs = () => {
-    fetch("http://localhost:3000/faqs")
+    fetch(`${apiUrl}/faqs`)
       .then((response) => response.json())
       .then((result) => {
         setFaqs(result);

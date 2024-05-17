@@ -13,6 +13,7 @@ const Success = () => {
   const dispatch = useDispatch();
   const location = useLocation();
   const [order, setOrder] = useState(null);
+  const apiUrl = process.env.REACT_APP_API_URL || "";
 
   useEffect(() => {
     const queryParams = new URLSearchParams(location.search);
@@ -20,7 +21,7 @@ const Success = () => {
     const fetchData = async () => {
       try {
         dispatch(clearCart());
-        const response = await axios.post("/server/order-details", {
+        const response = await axios.post(`${apiUrl}/order-details`, {
           paymentId,
         });
         const givenDate = new Date(response.data.result.order_date);

@@ -1,6 +1,5 @@
 import Clothes from "../../assets/clothes.jpg";
 import Heading from "../Partials/Heading";
-import { Link } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import bcrypt from "bcryptjs";
@@ -33,6 +32,7 @@ const ForgotPassword = () => {
   const [otp, setOtp] = useState(new Array(length).fill(""));
   const inputRefs = useRef([]);
   const navigate = useNavigate();
+  const apiUrl = process.env.REACT_APP_API_URL || "";
 
   useEffect(() => {
     if (inputRefs.current[0]) {
@@ -76,7 +76,7 @@ const ForgotPassword = () => {
   const handleSendMail = async (e) => {
     e.preventDefault();
     await axios
-      .post("/server/send-mail", {
+      .post(`${apiUrl}/send-mail`, {
         email,
       })
       .then((response) => {
@@ -113,7 +113,7 @@ const ForgotPassword = () => {
 
   const onOtpSubmit = async (otp) => {
     await axios
-      .post("/server/verify-otp", {
+      .post(`${apiUrl}/verify-otp`, {
         otp,
         email,
       })
@@ -174,7 +174,7 @@ const ForgotPassword = () => {
       setError(null);
       const hashedPassword = await bcrypt.hash(newPassword, 10);
       await axios
-        .post("/server/change-password", {
+        .post(`${apiUrl}/change-password`, {
           newPassword: hashedPassword,
           email,
         })

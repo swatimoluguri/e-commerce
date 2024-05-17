@@ -13,6 +13,7 @@ const Contact = () => {
     message: "",
   });
   const [enquiry, setEnquiry] = useState(null);
+  const apiUrl = process.env.REACT_APP_API_URL || "";
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -24,7 +25,7 @@ const Contact = () => {
 
   const handleContactUs = async (e) => {
     e.preventDefault();
-    const response = await axios.post("/server/contact-us", {
+    const response = await axios.post(`${apiUrl}/contact-us`, {
       formData,
     });
     if (response.status === 200) {
@@ -63,7 +64,7 @@ const Contact = () => {
             <form onSubmit={handleContactUs}>
               <div className="flex gap-4 mt-6 w-full justify-between">
                 <div className="flex-col w-1/2">
-                  <label className="font-bold" for="name">
+                  <label className="font-bold" htmlFor="name">
                     Your Name <sup>*</sup>
                   </label>
                   <input
@@ -76,7 +77,7 @@ const Contact = () => {
                   />
                 </div>
                 <div className="flex-col w-1/2">
-                  <label className="font-bold" for="email">
+                  <label className="font-bold" htmlFor="email">
                     Email <sup>*</sup>
                   </label>
                   <input
@@ -90,7 +91,7 @@ const Contact = () => {
                 </div>
               </div>
               <div className="w-full">
-                <label className="font-bold w-full" for="subject">
+                <label className="font-bold w-full" htmlFor="subject">
                   Subject <sup>*</sup>
                 </label>
                 <input
@@ -103,7 +104,7 @@ const Contact = () => {
                 />
               </div>
               <div>
-                <label className="font-bold w-full" for="message">
+                <label className="font-bold w-full" htmlFor="message">
                   Your Message <sup>*</sup>
                 </label>
                 <textarea
@@ -163,9 +164,9 @@ const Contact = () => {
         src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d669.0547157050926!2d79.12829866533423!3d18.44988308890282!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bccd8decd62d78f%3A0xfaaf8ec24fa783d6!2sSVJC%20Girls%20Jr.%20College!5e0!3m2!1sen!2sin!4v1715335905158!5m2!1sen!2sin"
         width="1920"
         height="600"
-        allowfullscreen=""
+        allowFullScreen=""
         loading="lazy"
-        referrerpolicy="no-referrer-when-downgrade"
+        referrerPolicy="no-referrer-when-downgrade"
       ></iframe>
       </div>
       <DetailsStrip />

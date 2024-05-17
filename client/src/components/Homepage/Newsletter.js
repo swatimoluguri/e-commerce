@@ -7,6 +7,7 @@ const Newsletter = () => {
   const [email, setEmail] = useState("");
   const [isValidEmail, setIsValidEmail] = useState(false);
   const [isSubscribed, setIsSubscribed] = useState(false);
+  const apiUrl = process.env.REACT_APP_API_URL || "";
 
   const validateEmail = (inputValue) => {
     if (inputValue) {
@@ -28,7 +29,7 @@ const Newsletter = () => {
   const handleNewsletter = async (e) => {
     e.preventDefault();
 
-    const response = await axios.post("/server/newsletter", {
+    const response = await axios.post(`${apiUrl}/newsletter`, {
       email,
     });
     if (response.status === 200) {

@@ -28,6 +28,7 @@ const Signup = () => {
   const dispatch = useDispatch();
   const user = useSelector((store) => store.user);
   const cart = useSelector((store) => store.cart);
+  const apiUrl = process.env.REACT_APP_API_URL || "";
 
   useEffect(() => {
     if (user?.user?.username?.length > 0) navigate("/");
@@ -81,7 +82,7 @@ const Signup = () => {
       password: hashedPassword,
     };
     await axios
-      .post("/server/sign-up", {
+      .post(`${apiUrl}/sign-up`, {
         formData: userData,
         cart,
       })

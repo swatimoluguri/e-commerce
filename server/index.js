@@ -45,13 +45,17 @@ const mailerSend = new MailerSend({
   apiKey: MAILERSEND_APIKEY,
 });
 
+
 const verifyToken = (req, res, next) => {
-  const token = req.cookies.token;
-  if (!token) return res.status(403).json({ message: "No token provided" });
+  const token = req.body.token;
+  if (!token) {
+    return res.status(403).json({ message: "No token provided" });
+  }
 
   jwt.verify(token, JWT_SECRET, (err, decoded) => {
-    if (err)
+    if (err) {
       return res.status(500).json({ message: "Failed to authenticate token" });
+    }
     req.userId = decoded.userId;
     next();
   });
@@ -63,7 +67,7 @@ function generateOTP() {
 }
 
 // Middleware setup
-app.use(express.static("build"));
+
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cors());
@@ -78,7 +82,6 @@ const db_port = PORT || 5000;
     await connectToDb();
     await startServer(app, PORT);
   } catch (err) {
-    console.error("Error initializing server:", err);
     process.exit(1);
   }
 })();
@@ -102,7 +105,7 @@ app.get("/products", (req, res) => {
 
 app.get("/faqs", (req, res) => {
   let faqs = [];
-  const faqsModel =getFaqsModel();
+  const faqsModel = getFaqsModel();
   faqsModel
     .find()
     .forEach((ques) => faqs.push(ques))
@@ -122,17 +125,13 @@ app.get("/category/:id", async (req, res) => {
       if (result) {
         const response = result.title;
         if (!["all", "high"].includes(response)) {
-          return productModel
-            .find({ category: response })
-            .toArray();
+          return productModel.find({ category: response }).toArray();
         } else {
           if (response === "all") {
             return productModel.find().toArray();
           }
           if (response === "high") {
-            return productModel
-              .find({ "rating.rate": { $gt: 4 } })
-              .toArray();
+            return productModel.find({ "rating.rate": { $gt: 4 } }).toArray();
           }
         }
       } else {
@@ -140,10 +139,9 @@ app.get("/category/:id", async (req, res) => {
       }
     })
     .then((products) => {
-      res.json(products);
+      res.status(200).json(products);
     })
     .catch((error) => {
-      console.error(error);
       res.status(500).json({ error: "Could not fetch categories" });
     });
 });
@@ -191,7 +189,6 @@ app.post("/checkout", verifyToken, async (req, res) => {
     });
     res.json(order);
   } catch (error) {
-    console.error("Error:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
@@ -221,7 +218,7 @@ app.post("/checkout/payment-verification", async (req, res) => {
       }
     );
     await cartModel.deleteMany({ userId: req.userId });
-    res.redirect(`/success?payment_id=${razorpay_payment_id}`);
+    res.redirect(`http://localhost:3000/success?payment_id=${razorpay_payment_id}`);
   } else {
     res.redirect("/failed");
   }
@@ -236,25 +233,10 @@ app.post("/order-details", async (req, res) => {
       res.status(200).json({ result });
     })
     .catch((error) => {
-      console.error(error);
       res.status(500).json({ message: "Server error" });
     });
 });
 
-// app.post("/google-auth", async (req, res) => {
-//   const { credential, client_id } = req.body;
-//   try {
-//     const ticket = await client.verifyIdToken({
-//       idToken: credential,
-//       audience: client_id,
-//     });
-//     const payload = ticket.getPayload();
-//     const userid = payload["sub"];
-//     res.status(200).json({ payload });
-//   } catch (err) {
-//     res.status(400).json({ err });
-//   }
-// });
 
 app.post("/sign-up", async (req, res) => {
   const { firstName, lastName, email } = req.body.formData;
@@ -275,18 +257,17 @@ app.post("/sign-up", async (req, res) => {
           expiresIn: "7d",
         });
 
-        res.cookie("token", token, {
-          httpOnly: true,
-          sameSite: "strict",
-          maxAge: 3600000,
-        });
+        // res.cookie("token", token, {
+        //   httpOnly: true,
+        //   sameSite: "None",
+        //   maxAge: 3600000,
+        // });
 
         req.body.cart.cart.items.forEach(async (item) => {
-          await cartModel
-            .insertOne({ userId: user.toString(), item: item });
+          await cartModel.insertOne({ userId: user.toString(), item: item });
         });
         const username = firstName + " " + lastName;
-        res.status(200).json({ username });
+        res.status(200).json({ username,token });
       })
       .catch((err) => {
         console.log(err);
@@ -313,21 +294,21 @@ app.post("/sign-in", async (req, res) => {
       expiresIn: "7d",
     });
 
-    res.cookie("token", token, {
-      httpOnly: true,
-      sameSite: "strict",
-      maxAge: 3600000,
-    });
+    // res.cookie("token", token, {
+    //   httpOnly: true,
+    //   sameSite: "None",
+    //   maxAge: 3600000,
+    // });
+
     req.body.cart.cart.items.forEach(async (item) => {
-      await cartModel
-        .insertOne({ userId: user._id.toString(), item: item });
+      await cartModel.insertOne({ userId: user._id.toString(), item: item });
     });
 
     const username = user.firstName + " " + user.lastName;
     const cart = await cartModel
       .find({ userId: user._id.toString() })
       .toArray();
-    res.status(200).json({ username, cart });
+    res.status(200).json({ username, cart,token });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Server error" });
@@ -370,7 +351,7 @@ app.post("/send-mail", async (req, res) => {
     }
     const sentFrom = new Sender(
       "swati@trial-0p7kx4x8kn2g9yjr.mlsender.net",
-      "Swati"
+      "Shoppy"
     );
     const recipients = [new Recipient(email)];
     const otp = generateOTP();
@@ -474,19 +455,20 @@ app.post("/add-cart", verifyToken, async (req, res) => {
   try {
     const newItem = req.body.item;
     const cartModel = getCartModel();
-    const existingItem = await cartModel
-      .findOne({ userId: req.userId, "item.id": newItem.id });
+    const existingItem = await cartModel.findOne({
+      userId: req.userId,
+      "item.id": newItem.id,
+    });
 
     if (existingItem) {
       const maxCount = 5;
       const combinedCount = existingItem.item.count + newItem.count;
       const newCount = combinedCount <= maxCount ? combinedCount : maxCount;
 
-      await cartModel
-        .findOneAndUpdate(
-          { userId: req.userId, "item.id": newItem.id },
-          { $set: { "item.count": newCount } }
-        );
+      await cartModel.findOneAndUpdate(
+        { userId: req.userId, "item.id": newItem.id },
+        { $set: { "item.count": newCount } }
+      );
 
       res.status(200).json({ message: "Item count updated" });
     } else {
@@ -505,28 +487,28 @@ app.post("/add-cart", verifyToken, async (req, res) => {
 
 app.post("/reduce-cart", verifyToken, async (req, res) => {
   const cartModel = getCartModel();
-  await cartModel
-    .findOneAndUpdate(
-      { userId: req.userId, "item.id": req.body.id },
-      { $inc: { "item.count": -1 } }
-    );
+  await cartModel.findOneAndUpdate(
+    { userId: req.userId, "item.id": req.body.id },
+    { $inc: { "item.count": -1 } }
+  );
   res.sendStatus(200);
 });
 
 app.post("/increase-cart", verifyToken, async (req, res) => {
   const cartModel = getCartModel();
-  await cartModel
-    .findOneAndUpdate(
-      { userId: req.userId, "item.id": req.body.id },
-      { $inc: { "item.count": 1 } }
-    );
+  await cartModel.findOneAndUpdate(
+    { userId: req.userId, "item.id": req.body.id },
+    { $inc: { "item.count": 1 } }
+  );
   res.sendStatus(200);
 });
 
 app.post("/delete-cart", verifyToken, async (req, res) => {
   const cartModel = getCartModel();
-  await cartModel
-    .findOneAndDelete({ userId: req.userId, "item.id": req.body.id });
+  await cartModel.findOneAndDelete({
+    userId: req.userId,
+    "item.id": req.body.id,
+  });
   res.sendStatus(200);
 });
 
@@ -536,7 +518,7 @@ app.post("/clear-cart", verifyToken, async (req, res) => {
   res.sendStatus(200);
 });
 
-app.get("/account-details", verifyToken, async (req, res) => {
+app.post("/account-details", verifyToken, async (req, res) => {
   const userId = new ObjectId(req.userId);
   const userModel = getUserModel();
   const orderModel = getOrderModel();

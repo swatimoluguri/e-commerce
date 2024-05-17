@@ -18,6 +18,7 @@ const Cart = () => {
   const cart = useSelector((store) => store.cart);
   const navigate = useNavigate();
   const user = useSelector((store) => store.user);
+  const apiUrl = process.env.REACT_APP_API_URL || "";
 
   const cartTotalAmt = useMemo(() => {
     return cart.cart.items.reduce((acc, item) => {
@@ -41,10 +42,13 @@ const Cart = () => {
     item.id = id;
     item.updateType = "reduce";
     dispatch(updateItem(item));
-    if (user?.user?.username?.length > 0)
-      await axios.post("/server/reduce-cart", {
+    if (user?.user?.username?.length > 0) {
+      const token = user.user.token;
+      await axios.post(`${apiUrl}/reduce-cart`, {
         id,
+        token,
       });
+    }
   }
 
   async function handleAddCount(id) {
@@ -52,31 +56,44 @@ const Cart = () => {
     item.id = id;
     item.updateType = "add";
     dispatch(updateItem(item));
-    if (user?.user?.username?.length > 0)
-      await axios.post("/server/increase-cart", {
+    if (user?.user?.username?.length > 0) {
+      const token = user.user.token;
+      await axios.post(`${apiUrl}/increase-cart`, {
         id,
+        token,
       });
+    }
   }
 
   async function handleDelete(id) {
     dispatch(deleteItem(id));
-    if (user?.user?.username?.length > 0)
-      await axios.post("/server/delete-cart", {
+    if (user?.user?.username?.length > 0) {
+      const token = user.user.token;
+      await axios.post(`${apiUrl}/delete-cart`, {
         id,
+        token,
       });
+    }
   }
 
   async function handleClearCart() {
     dispatch(clearCart());
-    if (user?.user?.username?.length > 0) await axios.get("/server/clear-cart");
+    if (user?.user?.username?.length > 0) {
+      const token = user.user.token;
+      await axios.post(`${apiUrl}/clear-cart`, {
+        token,
+      });
+    }
   }
 
   async function handleCheckout() {
+    const token = user.user.token;
     const {
       data: { id },
-    } = await axios.post("/server/checkout", {
+    } = await axios.post(`${apiUrl}/checkout`, {
       cart,
       amount: cartTotal,
+      token,
     });
 
     var options = {
@@ -88,7 +105,7 @@ const Cart = () => {
       image:
         "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQRY7zpT4pHNb8LZfnaP0xI7FYTkiZaYfPUhEaV1scVsQ&s",
       order_id: id,
-      callback_url: "/server/checkout/payment-verification",
+      callback_url: `${apiUrl}/checkout/payment-verification`,
       prefill: {
         name: "Gaurav Kumar",
         email: "gaurav.kumar@example.com",
@@ -180,7 +197,9 @@ const Cart = () => {
                 ))}
               </tbody>
             </table>
-            <div className="text-red-500 text-right mt-4 text-sm">Max Quantity for each product is 5</div>
+            <div className="text-red-500 text-right mt-4 text-sm">
+              Max Quantity for each product is 5
+            </div>
             <div className="flex items-center justify-between mt-10">
               <div>
                 <Link to="/products">
@@ -201,24 +220,26 @@ const Cart = () => {
             <p className="text-lg font-semibold">Order Summary</p>
             <hr className="my-4" />
             <table className="w-full">
-              <tr>
-                <th className="text-left p-2">Items</th>
-                <td className="text-right p-2">{cartItems}</td>
-              </tr>
-              <tr>
-                <th className="text-left p-2">Sub Total</th>
-                <td className="text-right p-2">
-                  ₹
-                  {cart.cart.items.reduce((acc, item) => {
-                    acc += Math.round(item.price * 84) * item.count;
-                    return acc;
-                  }, 0)}
-                </td>
-              </tr>
-              <tr>
-                <th className="text-left p-2">Shipping</th>
-                <td className="text-green-400 text-right p-2">Free</td>
-              </tr>
+              <tbody>
+                <tr>
+                  <th className="text-left p-2">Items</th>
+                  <td className="text-right p-2">{cartItems}</td>
+                </tr>
+                <tr>
+                  <th className="text-left p-2">Sub Total</th>
+                  <td className="text-right p-2">
+                    ₹
+                    {cart.cart.items.reduce((acc, item) => {
+                      acc += Math.round(item.price * 84) * item.count;
+                      return acc;
+                    }, 0)}
+                  </td>
+                </tr>
+                <tr>
+                  <th className="text-left p-2">Shipping</th>
+                  <td className="text-green-400 text-right p-2">Free</td>
+                </tr>
+              </tbody>
             </table>
             <hr className="my-4" />
             <div className="flex justify-between p-4">
