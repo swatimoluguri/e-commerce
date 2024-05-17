@@ -5,12 +5,16 @@ const { ObjectId } = require("mongodb");
 const cookieParser = require("cookie-parser");
 const {
   connectToDb,
-  getDb,
+  startServer,
+  getProductsModel,
+  getFaqsModel,
+  getCartModel,
   getOrderModel,
   getUserModel,
   getCustomerEnquiries,
   getNewsletter,
   getResetPwd,
+  getCategoryModel,
 } = require("./db");
 const Razorpay = require("razorpay");
 const crypto = require("crypto");
@@ -24,8 +28,13 @@ const app = express();
 const client = new OAuth2Client();
 
 require("dotenv").config();
-const { MAILERSEND_APIKEY, JWT_SECRET, RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET } =
-  process.env;
+const {
+  MAILERSEND_APIKEY,
+  JWT_SECRET,
+  RAZORPAY_KEY_ID,
+  RAZORPAY_KEY_SECRET,
+  PORT,
+} = process.env;
 
 const razorpay = new Razorpay({
   key_id: RAZORPAY_KEY_ID,
@@ -63,22 +72,24 @@ app.use(cookieParser());
 
 //connections
 let db;
-connectToDb((err) => {
-  if (!err) {
-    app.listen(5000, () => {
-      console.log("App listening on port 5000");
-    });
-    db = getDb();
-  } else {
-    console.log(err);
+const db_port = PORT || 5000;
+(async () => {
+  try {
+    await connectToDb();
+    await startServer(app, PORT);
+  } catch (err) {
+    console.error("Error initializing server:", err);
+    process.exit(1);
   }
-});
+})();
 
 //routes
 
 app.get("/products", (req, res) => {
   let products = [];
-  db.collection("products")
+  const productModel = getProductsModel();
+
+  productModel
     .find()
     .forEach((product) => products.push(product))
     .then(() => {
@@ -91,7 +102,8 @@ app.get("/products", (req, res) => {
 
 app.get("/faqs", (req, res) => {
   let faqs = [];
-  db.collection("faqs")
+  const faqsModel =getFaqsModel();
+  faqsModel
     .find()
     .forEach((ques) => faqs.push(ques))
     .then(() => res.json(faqs))
@@ -102,23 +114,23 @@ app.get("/faqs", (req, res) => {
 
 app.get("/category/:id", async (req, res) => {
   const category = req.params.id;
-  db.collection("categories")
+  const categoryModel = getCategoryModel();
+  const productModel = getProductsModel();
+  categoryModel
     .findOne({ name: category })
     .then((result) => {
       if (result) {
         const response = result.title;
         if (!["all", "high"].includes(response)) {
-          return db
-            .collection("products")
+          return productModel
             .find({ category: response })
             .toArray();
         } else {
           if (response === "all") {
-            return db.collection("products").find().toArray();
+            return productModel.find().toArray();
           }
           if (response === "high") {
-            return db
-              .collection("products")
+            return productModel
               .find({ "rating.rate": { $gt: 4 } })
               .toArray();
           }
@@ -138,14 +150,16 @@ app.get("/category/:id", async (req, res) => {
 
 app.get("/products/:id", (req, res) => {
   const prodId = new ObjectId(req.params.id);
-  db.collection("products")
+  const categoryModel = getCategoryModel();
+  const productModel = getProductsModel();
+  productModel
     .findOne({ _id: prodId })
     .then((result) => {
-      db.collection("products")
+      productModel
         .find({ category: result.category, _id: { $ne: prodId } })
         .toArray()
         .then((relProds) => {
-          db.collection("categories")
+          categoryModel
             .find({ title: result.category })
             .toArray()
             .then((cat) => {
@@ -193,6 +207,7 @@ app.post("/checkout/payment-verification", async (req, res) => {
   const isValid = response === razorpay_signature;
   if (isValid) {
     const orderModel = getOrderModel();
+    const cartModel = getCartModel();
     await orderModel.findOneAndUpdate(
       {
         order_id: razorpay_order_id,
@@ -205,7 +220,7 @@ app.post("/checkout/payment-verification", async (req, res) => {
         },
       }
     );
-    await db.collection("cart").deleteMany({ userId: req.userId });
+    await cartModel.deleteMany({ userId: req.userId });
     res.redirect(`/success?payment_id=${razorpay_payment_id}`);
   } else {
     res.redirect("/failed");
@@ -226,24 +241,25 @@ app.post("/order-details", async (req, res) => {
     });
 });
 
-app.post("/google-auth", async (req, res) => {
-  const { credential, client_id } = req.body;
-  try {
-    const ticket = await client.verifyIdToken({
-      idToken: credential,
-      audience: client_id,
-    });
-    const payload = ticket.getPayload();
-    const userid = payload["sub"];
-    res.status(200).json({ payload });
-  } catch (err) {
-    res.status(400).json({ err });
-  }
-});
+// app.post("/google-auth", async (req, res) => {
+//   const { credential, client_id } = req.body;
+//   try {
+//     const ticket = await client.verifyIdToken({
+//       idToken: credential,
+//       audience: client_id,
+//     });
+//     const payload = ticket.getPayload();
+//     const userid = payload["sub"];
+//     res.status(200).json({ payload });
+//   } catch (err) {
+//     res.status(400).json({ err });
+//   }
+// });
 
 app.post("/sign-up", async (req, res) => {
   const { firstName, lastName, email } = req.body.formData;
   const userModel = getUserModel();
+  const cartModel = getCartModel();
   const alreadyExisting = await userModel.findOne({ email: email });
   let user;
   if (alreadyExisting) {
@@ -266,8 +282,7 @@ app.post("/sign-up", async (req, res) => {
         });
 
         req.body.cart.cart.items.forEach(async (item) => {
-          await db
-            .collection("cart")
+          await cartModel
             .insertOne({ userId: user.toString(), item: item });
         });
         const username = firstName + " " + lastName;
@@ -282,6 +297,7 @@ app.post("/sign-up", async (req, res) => {
 app.post("/sign-in", async (req, res) => {
   const { email, password } = req.body.formData;
   const userModel = getUserModel();
+  const cartModel = getCartModel();
   try {
     const user = await userModel.findOne({ email: email });
     if (!user) {
@@ -303,14 +319,12 @@ app.post("/sign-in", async (req, res) => {
       maxAge: 3600000,
     });
     req.body.cart.cart.items.forEach(async (item) => {
-      await db
-        .collection("cart")
+      await cartModel
         .insertOne({ userId: user._id.toString(), item: item });
     });
 
     const username = user.firstName + " " + user.lastName;
-    const cart = await db
-      .collection("cart")
+    const cart = await cartModel
       .find({ userId: user._id.toString() })
       .toArray();
     res.status(200).json({ username, cart });
@@ -459,8 +473,8 @@ app.post("/change-password", async (req, res) => {
 app.post("/add-cart", verifyToken, async (req, res) => {
   try {
     const newItem = req.body.item;
-    const existingItem = await db
-      .collection("cart")
+    const cartModel = getCartModel();
+    const existingItem = await cartModel
       .findOne({ userId: req.userId, "item.id": newItem.id });
 
     if (existingItem) {
@@ -468,8 +482,7 @@ app.post("/add-cart", verifyToken, async (req, res) => {
       const combinedCount = existingItem.item.count + newItem.count;
       const newCount = combinedCount <= maxCount ? combinedCount : maxCount;
 
-      await db
-        .collection("cart")
+      await cartModel
         .findOneAndUpdate(
           { userId: req.userId, "item.id": newItem.id },
           { $set: { "item.count": newCount } }
@@ -477,7 +490,7 @@ app.post("/add-cart", verifyToken, async (req, res) => {
 
       res.status(200).json({ message: "Item count updated" });
     } else {
-      await db.collection("cart").insertOne({
+      await cartModel.insertOne({
         userId: req.userId,
         item: req.body.item,
       });
@@ -491,8 +504,8 @@ app.post("/add-cart", verifyToken, async (req, res) => {
 });
 
 app.post("/reduce-cart", verifyToken, async (req, res) => {
-  await db
-    .collection("cart")
+  const cartModel = getCartModel();
+  await cartModel
     .findOneAndUpdate(
       { userId: req.userId, "item.id": req.body.id },
       { $inc: { "item.count": -1 } }
@@ -501,8 +514,8 @@ app.post("/reduce-cart", verifyToken, async (req, res) => {
 });
 
 app.post("/increase-cart", verifyToken, async (req, res) => {
-  await db
-    .collection("cart")
+  const cartModel = getCartModel();
+  await cartModel
     .findOneAndUpdate(
       { userId: req.userId, "item.id": req.body.id },
       { $inc: { "item.count": 1 } }
@@ -511,23 +524,26 @@ app.post("/increase-cart", verifyToken, async (req, res) => {
 });
 
 app.post("/delete-cart", verifyToken, async (req, res) => {
-  await db
-    .collection("cart")
+  const cartModel = getCartModel();
+  await cartModel
     .findOneAndDelete({ userId: req.userId, "item.id": req.body.id });
   res.sendStatus(200);
 });
 
 app.post("/clear-cart", verifyToken, async (req, res) => {
-  await db.collection("cart").deleteMany({ userId: req.userId });
+  const cartModel = getCartModel();
+  await cartModel.deleteMany({ userId: req.userId });
   res.sendStatus(200);
 });
 
 app.get("/account-details", verifyToken, async (req, res) => {
   const userId = new ObjectId(req.userId);
+  const userModel = getUserModel();
+  const orderModel = getOrderModel();
   let user = {};
 
   try {
-    const userResponse = await db.collection("users").findOne({ _id: userId });
+    const userResponse = await userModel.findOne({ _id: userId });
     if (!userResponse) {
       return res.status(404).json({ message: "User not found" });
     }
@@ -535,14 +551,14 @@ app.get("/account-details", verifyToken, async (req, res) => {
     user.name = userResponse.firstName + " " + userResponse.lastName;
     user.email = userResponse.email;
 
-    const orders = await db
-      .collection("orders")
-      .find({ userId: userId.toString(),razorpay_payment_id:{ $ne: null } })
+    const orders = await orderModel
+      .find({ userId: userId.toString(), razorpay_payment_id: { $ne: null } })
       .toArray();
     user.orders = orders;
 
     res.status(200).json(user);
   } catch (error) {
+    console.log(error);
     res.status(500).json({ message: "Internal Server Error" });
   }
 });

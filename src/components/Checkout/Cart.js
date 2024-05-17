@@ -114,13 +114,13 @@ const Cart = () => {
         acc += item.count;
         return acc;
       }, 0) > 0 ? (
-        <div className="flex my-12 mx-24 justify-around">
-          <div className="w-1/2">
-            <table className="w-full">
+        <div className="flex xl:flex-row flex-col my-12 mx-auto xl:mx-24 justify-around">
+          <div className="w-11/12 xl:w-1/2 xl:mx-0 mx-auto">
+            <table className="w-full ">
               <thead>
-                <tr className="bg-app-yellow text-lg font-semibold text-center">
+                <tr className="bg-app-yellow text-md xl:text-lg font-semibold text-center">
                   <td className="rounded-l-lg p-3">Product</td>
-                  <td className="p-3">Price</td>
+                  <td className=" p-3">Price</td>
                   <td className="p-3">Quantity</td>
                   <td className=" p-3">Subtotal</td>
                   <td className="rounded-r-lg p-3"></td>
@@ -129,11 +129,11 @@ const Cart = () => {
               <tbody>
                 {cart.cart.items.map((item, index) => (
                   <tr key={index} className="border-b border-gray-200">
-                    <td className="p-3 flex items-center gap-6">
+                    <td className="p-2 xl:p-3 flex items-center gap-2 xl:gap-6">
                       <Link to={"/products/" + item._id} key={item._id}>
-                        <div className="h-28 w-20 rounded-3xl">
+                        <div className=" h-16 w-14 xl:h-28 xl:w-20 rounded-lg xl:rounded-3xl">
                           <img
-                            className="object-contain w-full h-full rounded-3xl"
+                            className="object-contain w-full h-full rounded-lg xl:rounded-3xl"
                             src={item.image}
                             alt={item._id}
                           />
@@ -141,30 +141,30 @@ const Cart = () => {
                       </Link>
                       {item.title}
                     </td>
-                    <td className="p-3 text-right">
+                    <td className=" p-2 xl:p-3 text-right">
                       ₹{Math.round(item.price * 84)}
                     </td>
-                    <td className="p-3 ">
-                      <div className="w-fit border border-gray-200 rounded-full flex items-center text-black  gap-5">
+                    <td className="p-2 xl:p-3 ">
+                      <div className="w-fit border border-gray-200 rounded-full flex items-center text-black  gap-2 xl:gap-5">
                         <div
-                          className="cursor-pointer border-r border-gray-200 px-4 py-2"
+                          className="cursor-pointer border-r border-gray-200 px-2 py-1 xl:px-4 xl:py-2"
                           onClick={() => handleReduceCount(item.id)}
                         >
                           -
                         </div>
                         <div>{item.count}</div>
                         <div
-                          className="cursor-pointer border-l border-gray-200 px-4 py-2"
+                          className="cursor-pointer border-l border-gray-200 px-2 py-1 xl:px-4 xl:py-2"
                           onClick={() => handleAddCount(item.id)}
                         >
                           +
                         </div>
                       </div>
                     </td>
-                    <td className="p-3 text-right">
+                    <td className="p-2 xl:p-3 text-right">
                       ₹{Math.round(item.price * 84) * item.count}
                     </td>
-                    <td className="p-3">
+                    <td className="p-2 xl:p-3">
                       <div
                         className="cursor-pointer"
                         onClick={() => handleDelete(item.id)}
@@ -197,7 +197,7 @@ const Cart = () => {
               </div>
             </div>
           </div>
-          <div className="w-1/4 border-2 p-4 border-gray-200 rounded-lg">
+          <div className="mt-10 mx-auto xl:mx-0 xl:mt-0 w-9/12 xl:w-1/4 border-2 p-4 border-gray-200 rounded-lg">
             <p className="text-lg font-semibold">Order Summary</p>
             <hr className="my-4" />
             <table className="w-full">

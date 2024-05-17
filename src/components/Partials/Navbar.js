@@ -44,23 +44,23 @@ const Navbar = () => {
   return (
     <div>
       {/* Top Navbar */}
-      <div className="bg-app-green h-12 px-2 md:px-8 lg:px-12 xl:px-16 2xl:px-24 flex items-center justify-between text-white">
-        <div className="flex flex-col md:flex-row w-1/2 md:w-fit">
-          <p>Call Us</p> <p>+91-98765-43210</p>{" "}
+      <div className="bg-app-green h-fit md:h-12 py-1 px-4 md:px-8 lg:px-12 xl:px-16 2xl:px-24 flex items-center justify-between text-white">
+        <div className="flex flex-col md:flex-row w-1/3 md:w-fit">
+          <p>Call Us</p> <p>+91-98765-43210</p>
         </div>
         {user?.user?.username?.length > 0 ? (
           <div>
-            Hi {user.user.username} !{" "}
+            Hi {user.user.username} !
             <Link to="/products">
               <span className="underline text-app-yellow font-semibold pl-4">
-                Let's shop{" "}
+                Let's shop
               </span>
             </Link>
           </div>
         ) : (
           <div className="flex flex-col md:flex-row">
             <span>Get 25% OFF on first order.</span>
-            <span className="text-app-yellow underline font-semibold pl-4">
+            <span className="text-app-yellow underline font-semibold pl-0 md:pl-4">
               <Link to="/signup">Sign Up Now</Link>
             </span>
           </div>
@@ -69,7 +69,7 @@ const Navbar = () => {
       </div>
 
       {/* Bottom Navbar */}
-      <div className="flex flex-row px-4 md:px-8 lg:px-12 xl:px-16 2xl:px-24 py-2 md:py-4 items-center justify-between bg-white">
+      <div className="flex flex-row px-4 md:px-8 lg:px-12 xl:px-16 2xl:px-24 py-4  items-center justify-between bg-white">
         <div>
           <Link to="/">
             <img className="w-32 md:w-44" src={Logo} alt="Logo" />

@@ -38,11 +38,12 @@ const SignIn = () => {
     }
     await axios
       .post("/sign-in", {
-        formData,cart
+        formData,
+        cart,
       })
       .then((response) => {
         dispatch(addUser(response.data));
-        response?.data?.cart.forEach((item)=>{
+        response?.data?.cart.forEach((item) => {
           dispatch(addItem(item.item));
         });
         setFormData({
@@ -51,7 +52,7 @@ const SignIn = () => {
         });
         setError(null);
 
-        navigate('/');
+        navigate("/");
       })
       .catch((error) => {
         if (error.response && error.response.status === 400) {
@@ -64,8 +65,8 @@ const SignIn = () => {
       <div className="flex flex-col items-center bg-[url('assets/bg.jpg')] bg-cover	">
         <Heading text="Sign In" heading="" highlight="" />
       </div>
-      <div className="flex justify-around p-4 ">
-        <div className="flex flex-col w-1/3 gap-3 mt-10">
+      <div className="flex flex-col lg:flex-row justify-around p-4 ">
+        <div className="flex flex-col w-11/12 mx-auto lg:mx-0 lg:w-1/3 gap-3">
           <div>
             <h1 className="font-bold text-2xl">Sign In</h1>
           </div>
@@ -119,18 +120,20 @@ const SignIn = () => {
                   </Link>
                 </p>
                 <p className="font-bold my-4">
-                New here?
-                <Link className="text-app-green hover:underline pl-2" to="/signup">
-                  Create an account
-                </Link>
-              </p>
-                
+                  New here?
+                  <Link
+                    className="text-app-green hover:underline pl-2"
+                    to="/signup"
+                  >
+                    Create an account
+                  </Link>
+                </p>
               </div>
             </div>
           </form>
         </div>
 
-        <div className="w-1/3">
+        <div className="lg:block hidden w-1/3 lg:my-auto">
           <img className="rounded-2xl" src={Clothes} />
         </div>
       </div>

@@ -194,9 +194,9 @@ const ForgotPassword = () => {
       <div className="flex flex-col items-center bg-[url('assets/bg.jpg')] bg-cover	">
         <Heading text="Password Recovery" heading="" highlight="" />
       </div>
-      <div className="flex justify-around p-4 ">
+      <div className="flex flex-col lg:flex-row justify-around p-4 ">
         {showSuccess ? (
-          <div className="flex flex-col w-1/3 gap-3 mt-10">
+          <div className="flex flex-col w-11/12 mx-auto lg:mx-0 lg:w-1/3 gap-3 mt-10">
             <div>
               <h1 className="font-bold text-2xl">Password Recovery</h1>
             </div>
@@ -215,7 +215,7 @@ const ForgotPassword = () => {
           </div>
         ) : mailSent ? (
           verifyOTP ? (
-            <div className="flex flex-col w-1/3 gap-3 mt-10">
+            <div className="flex flex-col w-11/12 mx-auto lg:mx-0 lg:w-1/3 gap-3 mt-10">
               <div>
                 <h1 className="font-bold text-2xl">Password Recovery</h1>
               </div>
@@ -291,7 +291,7 @@ const ForgotPassword = () => {
               </form>
             </div>
           ) : (
-            <div className="flex flex-col w-1/3 gap-3 mt-10">
+            <div className="flex flex-col w-11/12 mx-auto lg:mx-0 lg:w-1/3 gap-3 mt-10">
               <div>
                 <h1 className="font-bold text-2xl">Password Recovery</h1>
               </div>
@@ -322,7 +322,7 @@ const ForgotPassword = () => {
             </div>
           )
         ) : (
-          <div className="flex flex-col w-1/3 gap-3 mt-10">
+          <div className="flex flex-col w-11/12 mx-auto lg:mx-0 lg:w-1/3 gap-3 mt-10">
             <div>
               <h1 className="font-bold text-2xl">Password Recovery</h1>
             </div>
@@ -357,7 +357,7 @@ const ForgotPassword = () => {
             </form>
           </div>
         )}
-        <div className="w-1/3">
+        <div className="lg:block hidden w-1/3 lg:my-auto">
           <img className="rounded-2xl" src={Clothes} />
         </div>
       </div>

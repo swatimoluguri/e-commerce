@@ -107,8 +107,8 @@ const Signup = () => {
       <div className="flex flex-col items-center bg-[url('assets/bg.jpg')] bg-cover	">
         <Heading text="Sign Up" heading="" highlight="" />
       </div>
-      <div className="flex justify-around p-4 ">
-        <div className="flex flex-col w-1/3 gap-3">
+      <div className="flex flex-col lg:flex-row justify-around p-4 ">
+        <div className="flex flex-col w-11/12 mx-auto lg:mx-0 lg:w-1/3 gap-3">
           <div>
             <h1 className="font-bold text-2xl">Sign Up</h1>
           </div>
@@ -215,7 +215,7 @@ const Signup = () => {
           </form>
         </div>
 
-        <div className="w-1/3">
+        <div className="lg:block hidden w-1/3 lg:my-auto">
           <img className="rounded-2xl" src={Clothes} />
         </div>
       </div>

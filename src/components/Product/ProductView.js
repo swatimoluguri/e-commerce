@@ -88,17 +88,17 @@ const ProductView = () => {
           <div className="flex flex-col items-center bg-[url('assets/bg.jpg')] bg-cover	">
             <Heading text={product.category} heading="" highlight="" />
           </div>
-          <div className="flex mt-12 mx-24 justify-around">
-            <div className="h-128 w-1/2 bg-gray-100 p-8 rounded-3xl">
+          <div className="flex md:flex-row flex-col mt-12 md:gap-0 gap-5 md:mx-24 justify-around">
+            <div className="h-128 w-11/12 md:w-1/2 mx-auto bg-gray-100  p-8 rounded-3xl">
               <img
                 className="object-contain w-full h-full rounded-3xl"
                 src={product.image}
                 alt={product._id}
               />
             </div>
-            <div className="w-1/2 flex flex-col ml-10 gap-4 ">
-              <p className="text-gray-500">{product.category}</p>
-              <div className="flex items-center">
+            <div className="w-9/12 md:w-1/2 mx-auto md:ml-10 flex flex-col  gap-4  ">
+              <p className=" text-gray-500">{product.category}</p>
+              <div className="flex justify-between items-center">
                 <h1 className="w-2/3 text-xl font-bold">{product.title}</h1>
                 <div className="mx-4 rounded-full border border-green-500 text-green-500 bg-green-50 px-2 py-1">
                   In Stock
@@ -134,10 +134,10 @@ const ProductView = () => {
                   ₹{Math.round(product.price * 84)}
                 </h1>
               </div>
-              <div className="w-2/3 text-gray-500 text-justify">
+              <div className="w-full md:w-2/3 text-gray-500 text-justify">
                 <p>{product.description}</p>
               </div>
-              <div className="flex items-center gap-5 mt-4">
+              <div className="flex items-center justify-between gap-0 md:gap-5 md:justify-start mt-4">
                 <div className="border border-gray-200 rounded-full flex items-center text-black font-bold text-lg gap-5">
                   <div
                     className="cursor-pointer border-r border-gray-200 px-4 py-2"
