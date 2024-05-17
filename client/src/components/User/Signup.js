@@ -81,7 +81,7 @@ const Signup = () => {
       password: hashedPassword,
     };
     await axios
-      .post("/sign-up", {
+      .post("/server/sign-up", {
         formData: userData,
         cart,
       })

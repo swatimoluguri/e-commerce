@@ -12,7 +12,8 @@ const ProductCard = ({ filter }) => {
   }, [filter]);
 
   const fetchProducts = (filter) => {
-    fetch("/category/" + filter)
+    const apiUrl = process.env.REACT_APP_API_URL || "";
+    fetch(`${apiUrl}/category/${filter}`)
       .then((res) => res.json())
       .then((result) => {
         setProducts(result);

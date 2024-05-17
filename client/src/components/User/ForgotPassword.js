@@ -76,7 +76,7 @@ const ForgotPassword = () => {
   const handleSendMail = async (e) => {
     e.preventDefault();
     await axios
-      .post("/send-mail", {
+      .post("/server/send-mail", {
         email,
       })
       .then((response) => {
@@ -113,7 +113,7 @@ const ForgotPassword = () => {
 
   const onOtpSubmit = async (otp) => {
     await axios
-      .post("/verify-otp", {
+      .post("/server/verify-otp", {
         otp,
         email,
       })
@@ -174,7 +174,7 @@ const ForgotPassword = () => {
       setError(null);
       const hashedPassword = await bcrypt.hash(newPassword, 10);
       await axios
-        .post("/change-password", {
+        .post("/server/change-password", {
           newPassword: hashedPassword,
           email,
         })

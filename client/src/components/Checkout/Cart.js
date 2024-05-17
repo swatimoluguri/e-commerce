@@ -42,7 +42,7 @@ const Cart = () => {
     item.updateType = "reduce";
     dispatch(updateItem(item));
     if (user?.user?.username?.length > 0)
-      await axios.post("/reduce-cart", {
+      await axios.post("/server/reduce-cart", {
         id,
       });
   }
@@ -53,7 +53,7 @@ const Cart = () => {
     item.updateType = "add";
     dispatch(updateItem(item));
     if (user?.user?.username?.length > 0)
-      await axios.post("/increase-cart", {
+      await axios.post("/server/increase-cart", {
         id,
       });
   }
@@ -61,20 +61,20 @@ const Cart = () => {
   async function handleDelete(id) {
     dispatch(deleteItem(id));
     if (user?.user?.username?.length > 0)
-      await axios.post("/delete-cart", {
+      await axios.post("/server/delete-cart", {
         id,
       });
   }
 
   async function handleClearCart() {
     dispatch(clearCart());
-    if (user?.user?.username?.length > 0) await axios.get("/clear-cart");
+    if (user?.user?.username?.length > 0) await axios.get("/server/clear-cart");
   }
 
   async function handleCheckout() {
     const {
       data: { id },
-    } = await axios.post("/checkout", {
+    } = await axios.post("/server/checkout", {
       cart,
       amount: cartTotal,
     });
@@ -88,7 +88,7 @@ const Cart = () => {
       image:
         "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQRY7zpT4pHNb8LZfnaP0xI7FYTkiZaYfPUhEaV1scVsQ&s",
       order_id: id,
-      callback_url: "/checkout/payment-verification",
+      callback_url: "/server/checkout/payment-verification",
       prefill: {
         name: "Gaurav Kumar",
         email: "gaurav.kumar@example.com",

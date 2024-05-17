@@ -37,7 +37,7 @@ const SignIn = () => {
       return;
     }
     await axios
-      .post("/sign-in", {
+      .post("/server/sign-in", {
         formData,
         cart,
       })

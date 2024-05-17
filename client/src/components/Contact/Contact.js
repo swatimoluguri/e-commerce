@@ -24,7 +24,7 @@ const Contact = () => {
 
   const handleContactUs = async (e) => {
     e.preventDefault();
-    const response = await axios.post("/contact-us", {
+    const response = await axios.post("/server/contact-us", {
       formData,
     });
     if (response.status === 200) {

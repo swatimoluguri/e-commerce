@@ -40,7 +40,7 @@ const ProductView = () => {
   }, [productId]);
 
   const fetchProduct = (productId) => {
-    fetch("/products/" + productId)
+    fetch("/server/products/" + productId)
       .then((res) => res.json())
       .then((result) => {
         setProduct(result);
@@ -64,7 +64,7 @@ const ProductView = () => {
     item.count = count;
     dispatch(addItem(item));
     if (user?.user?.username?.length > 0) {
-      await axios.post("/add-cart", {
+      await axios.post("/server/add-cart", {
         item,
       });
     }

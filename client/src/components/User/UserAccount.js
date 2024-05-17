@@ -18,7 +18,7 @@ const UserAccount = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get("/account-details");
+        const response = await axios.get("/server/account-details");
         setUser(response.data);
       } catch (error) {
         if (error.response && error.response.status === 403) {

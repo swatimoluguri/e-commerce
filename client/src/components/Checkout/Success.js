@@ -20,7 +20,7 @@ const Success = () => {
     const fetchData = async () => {
       try {
         dispatch(clearCart());
-        const response = await axios.post("/order-details", {
+        const response = await axios.post("/server/order-details", {
           paymentId,
         });
         const givenDate = new Date(response.data.result.order_date);

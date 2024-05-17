@@ -28,7 +28,7 @@ const Newsletter = () => {
   const handleNewsletter = async (e) => {
     e.preventDefault();
 
-    const response = await axios.post("/newsletter", {
+    const response = await axios.post("/server/newsletter", {
       email,
     });
     if (response.status === 200) {
