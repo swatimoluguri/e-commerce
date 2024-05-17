@@ -34,6 +34,7 @@ const {
   RAZORPAY_KEY_ID,
   RAZORPAY_KEY_SECRET,
   PORT,
+  CLIENT_PORT
 } = process.env;
 
 const razorpay = new Razorpay({
@@ -218,7 +219,7 @@ app.post("/checkout/payment-verification", async (req, res) => {
       }
     );
     await cartModel.deleteMany({ userId: req.userId });
-    res.redirect(`http://localhost:3000/success?payment_id=${razorpay_payment_id}`);
+    res.redirect(`${CLIENT_PORT}/success?payment_id=${razorpay_payment_id}`);
   } else {
     res.redirect("/failed");
   }
